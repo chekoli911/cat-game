@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Котик и корм</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #000; }
+    canvas { display: block; }
+    #start-screen, #restart-screen {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #restart-screen { display: none; }
+    button {
+      font-size: 2em; padding: 0.6em 1.4em;
+      border: none; border-radius: 10px;
+      background: #fff; color: #333;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="start-screen">
+  <button id="start-button">Играть</button>
+</div>
+<div id="restart-screen">
+  <button id="restart-button">Сыграть ещё</button>
+</div>
+<script>
+  let cat, cursors, foods, score = 0, scoreText, chompSound, timerText, timeLeft = 45;
+  let config, currentGame;
+
+  document.getElementById("start-button").addEventListener("click", () => {
+    document.getElementById("start-screen").style.display = "none";
+    startGame();
+  });
+
+  document.getElementById("restart-button").addEventListener("click", () => {
+    document.getElementById("restart-screen").style.display = "none";
+    document.querySelector("canvas")?.remove();
+    if (currentGame) currentGame.destroy(true);
+    setTimeout(() => startGame(), 100);
+  });
+
+  function startGame() {
+    config = {
+      type: Phaser.AUTO,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: '#000000',
+      physics: { default: 'arcade' },
+      scene: { preload, create, update }
+    };
+    currentGame = new Phaser.Game(config);
+  }
+
+  function preload() {
+    this.load.image('cat', 'my_cat.png');
+    this.load.image('food', 'food_new.png');
+    this.load.image('bg', 'my_bg.png');
+    this.load.audio('chomp', 'crunch.mp3');
+  }
+
+  function create() {
+  score = 0;
+  timeLeft = 45;
+    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'bg')
+        .setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+
+    cat = this.physics.add.sprite(400, 300, 'cat').setScale(0.12);
+    cat.setCollideWorldBounds(true);
+    cursors = this.input.keyboard.createCursorKeys();
+    foods = this.physics.add.group();
+    chompSound = this.sound.add('chomp');
+
+    scoreText = this.add.text(16, 16, 'Очки: 0', { fontSize: '24px', fill: '#fff' }).setScrollFactor(0);
+    timerText = this.add.text(16, 48, 'Время: 45', { fontSize: '24px', fill: '#fff' }).setScrollFactor(0);
+
+    spawnFood.call(this);
+    this.physics.add.overlap(cat, foods, collectFood, null, this);
+
+    timeLeft = 45;
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        timeLeft--;
+        timerText.setText('Время: ' + timeLeft);
+        if (timeLeft <= 0) {
+          this.physics.pause();
+          scoreText.setText('Результат: ' + score);
+          timerText.setText('Конец!');
+          document.getElementById("restart-screen").style.display = "flex";
+        }
+      },
+      loop: true
+    });
+  }
+
+  function update() {
+    cat.setVelocity(0);
+    if (cursors.left.isDown) cat.setVelocityX(-200);
+    if (cursors.right.isDown) cat.setVelocityX(200);
+    if (cursors.up.isDown) cat.setVelocityY(-200);
+    if (cursors.down.isDown) cat.setVelocityY(200);
+  }
+
+  function spawnFood() {
+    const x = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+    const y = Phaser.Math.Between(50, this.sys.game.config.height - 50);
+    const food = foods.create(x, y, 'food');
+    food.setScale(0.125);
+  }
+
+  function collectFood(cat, food) {
+    food.destroy();
+    score += 1;
+    scoreText.setText('Очки: ' + score);
+    chompSound.play();
+    spawnFood.call(this);
+  }
+
+  window.addEventListener('resize', () => {
+    if (currentGame) {
+      currentGame.scale.resize(window.innerWidth, window.innerHeight);
+    }
+  });
+</script>
+</body>
+</html>
