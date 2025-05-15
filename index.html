@@ -118,7 +118,7 @@
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(cat, catX, catY, 130 * catScale, 130 * catScale);
+      ctx.drawImage(cat, catX, catY, 130 * catScale, 130 * catScale); // draw cat with dynamic scale
       ctx.drawImage(food, foodX, foodY, 78, 78);
 
       ctx.fillStyle = 'white';
@@ -130,8 +130,10 @@
     function update() {
       // Обновление позиции кота с ограничениями
 
-      catX = Math.max(0, Math.min(canvas.width - 130 * catScale, catX + velocity.x));
-      catY = Math.max(0, Math.min(canvas.height - 130 * catScale, catY + velocity.y));
+      catX += velocity.x;
+      catX = Math.max(0, Math.min(canvas.width - 130 * catScale, catX));
+      catY += velocity.y;
+      catY = Math.max(0, Math.min(canvas.height - 130 * catScale, catY));
 
       const dx = catX - foodX;
       const dy = catY - foodY;
