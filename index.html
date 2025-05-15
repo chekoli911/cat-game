@@ -89,6 +89,7 @@
     let score = 0;
     let timeLeft = 45;
     let gameRunning = true;
+    let lives = 3;
     let lastFoodTime = Date.now();
     let timerInterval;
 
@@ -104,9 +105,12 @@
       startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       if (playerToZloi < 55) {
+        lives--;
+        if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
         return;
+      }
       }
       requestAnimationFrame(gameLoop);
     }
@@ -154,6 +158,7 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
       ctx.fillText(`Время: ${timeLeft}`, 20, 60);
+      ctx.fillText(`Жизни: ${'💛'.repeat(lives)}`, 20, 90);
     }
 
     function update() {
@@ -194,9 +199,12 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       if (playerToZloi < 55) {
+        lives--;
+        if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
         return;
+      }
       }
       requestAnimationFrame(gameLoop);
     }
