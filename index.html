@@ -84,6 +84,7 @@
     let score = 0;
     let timeLeft = 45;
     let gameRunning = true;
+    let lastFoodTime = Date.now();
     let timerInterval;
 
     function resetGame() {
@@ -148,12 +149,19 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
       catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
+      if (Date.now() - lastFoodTime > 4000) {
+        foodX = Math.random() * (canvas.width - 50);
+        foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
+      }
+
       const dx = catX - foodX;
       const dy = catY - foodY;
       if (Math.hypot(dx, dy) < 50) {
         score++;
         foodX = Math.random() * (canvas.width - 50);
         foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
         crunchSound.play();
       }
     }
