@@ -82,6 +82,8 @@
     let velocity = { x: 0, y: 0 };
     let foodX, foodY;
     let score = 0;
+      catScale = 1.3;
+    let catScale = 1.3;
     let timeLeft = 45;
     let gameRunning = true;
     let timerInterval;
@@ -116,8 +118,8 @@
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(cat, catX, catY, 100, 100);
-      ctx.drawImage(food, foodX, foodY, 60, 60);
+      ctx.drawImage(cat, catX, catY, 130 * catScale, 130 * catScale);
+      ctx.drawImage(food, foodX, foodY, 78, 78);
 
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
@@ -128,13 +130,14 @@
     function update() {
       // Обновление позиции кота с ограничениями
 
-      catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
-      catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
+      catX = Math.max(0, Math.min(canvas.width - 130 * catScale, catX + velocity.x));
+      catY = Math.max(0, Math.min(canvas.height - 130 * catScale, catY + velocity.y));
 
       const dx = catX - foodX;
       const dy = catY - foodY;
       if (Math.hypot(dx, dy) < 50) {
         score++;
+        catScale *= 1.02;
         foodX = Math.random() * (canvas.width - 50);
         foodY = Math.random() * (canvas.height - 50);
         crunchSound.play();
