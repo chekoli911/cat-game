@@ -67,6 +67,11 @@
     canvas.height = window.innerHeight;
 
     const crunchSound = document.getElementById('crunchSound');
+
+    const catZloi = new Image();
+    catZloi.src = 'cat_zloi.png';
+    let zloiX = Math.random() * (canvas.width - 200);
+    let zloiY = Math.random() * (canvas.height - 200);
     const restartButton = document.getElementById('restartButton');
 
     const cat = new Image();
@@ -84,7 +89,6 @@
     let score = 0;
     let timeLeft = 45;
     let gameRunning = true;
-    let lastFoodTime = Date.now();
     let timerInterval;
 
     function resetGame() {
@@ -97,6 +101,11 @@
       foodY = Math.random() * (canvas.height - 50);
       restartButton.style.display = 'none';
       startTimer();
+      const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
+      if (playerToZloi < 100) {
+        gameRunning = false;
+        restartButton.style.display = 'block';
+      }
       requestAnimationFrame(gameLoop);
     }
 
@@ -115,27 +124,10 @@
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-// Центрированное масштабирование фона без искажения
-const bgAspect = bg.width / bg.height;
-const canvasAspect = canvas.width / canvas.height;
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(cat, catX, catY, 100, 100);
+      ctx.drawImage(food, foodX, foodY, 60, 60);
 
-let bgDrawWidth, bgDrawHeight;
-if (canvasAspect > bgAspect) {
-  bgDrawWidth = canvas.width;
-  bgDrawHeight = canvas.width / bgAspect;
-} else {
-  bgDrawHeight = canvas.height;
-  bgDrawWidth = canvas.height * bgAspect;
-}
-
-const bgX = (canvas.width - bgDrawWidth) / 2;
-const bgY = (canvas.height - bgDrawHeight) / 2;
-
-ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
-
-      ctx.drawImage(cat, catX, catY, 110, 110);
-      ctx.drawImage(food, foodX, foodY, 110, 110);
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
@@ -148,10 +140,12 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
       catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
-      if (Date.now() - lastFoodTime > 4000) {
-        foodX = Math.random() * (canvas.width - 50);
-        foodY = Math.random() * (canvas.height - 50);
-        lastFoodTime = Date.now();
+      const dzX = foodX - zloiX;
+      const dzY = foodY - zloiY;
+      const distZloi = Math.hypot(dzX, dzY);
+      if (distZloi > 1) {
+        zloiX += (dzX / distZloi) * 1.5;
+        zloiY += (dzY / distZloi) * 1.5;
       }
 
       const dx = catX - foodX;
@@ -169,6 +163,11 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       if (!gameRunning) return;
       update();
       draw();
+      const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
+      if (playerToZloi < 100) {
+        gameRunning = false;
+        restartButton.style.display = 'block';
+      }
       requestAnimationFrame(gameLoop);
     }
 
