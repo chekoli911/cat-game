@@ -52,25 +52,30 @@
     }
   
     #mainMenu {
-      position: absolute;
+      position: fixed;
+      top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      background: url('main_menu.jpg') no-repeat center center;
-      background-size: contain;
+      background: #000;
       display: flex;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
-      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
     }
-    #startGame {
+    #menuImage {
+      max-width: 90%;
+      height: auto;
+    }
+    #startButton {
+      margin-top: 20px;
       padding: 16px 32px;
-      font-size: 22px;
+      font-size: 24px;
+      background-color: orange;
+      color: white;
       border: none;
       border-radius: 10px;
-      background-color: white;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
   </style>
@@ -78,7 +83,8 @@
 <body>
   <canvas id="game"></canvas>
   <div id="mainMenu">
-    <button id="startGame">Покормить</button>
+    <img src="main_menu.png" id="menuImage" />
+    <button id="startButton">Покормить</button>
   </div>
   <div id="joystick">
     <div id="stick"></div>
@@ -413,8 +419,11 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    document.getElementById('startGame').addEventListener('click', () => {
-      document.getElementById('mainMenu').style.display = 'none';
+    const mainMenu = document.getElementById('mainMenu');
+    const startButton = document.getElementById('startButton');
+
+    startButton.addEventListener('click', () => {
+      mainMenu.style.display = 'none';
       resetGame();
     });
 
