@@ -36,6 +36,20 @@
       border-radius: 50%;
       pointer-events: none;
     }
+    #restartButton {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
@@ -43,12 +57,17 @@
   <div id="joystick">
     <div id="stick"></div>
   </div>
+  <button id="restartButton">Сыграть ещё</button>
+  <audio id="crunchSound" src="crunch.mp3"></audio>
 
   <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    const crunchSound = document.getElementById('crunchSound');
+    const restartButton = document.getElementById('restartButton');
 
     const cat = new Image();
     cat.src = 'my_cat.png';
@@ -61,11 +80,37 @@
 
     let catX = 100, catY = 100;
     let velocity = { x: 0, y: 0 };
-    let foodX = Math.random() * (canvas.width - 50);
-    let foodY = Math.random() * (canvas.height - 50);
+    let foodX, foodY;
     let score = 0;
     let timeLeft = 45;
+    let gameRunning = true;
     let timerInterval;
+
+    function resetGame() {
+      catX = 100;
+      catY = 100;
+      score = 0;
+      timeLeft = 45;
+      gameRunning = true;
+      foodX = Math.random() * (canvas.width - 50);
+      foodY = Math.random() * (canvas.height - 50);
+      restartButton.style.display = 'none';
+      startTimer();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+        } else {
+          clearInterval(timerInterval);
+          gameRunning = false;
+          restartButton.style.display = 'block';
+        }
+      }, 1000);
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -89,41 +134,18 @@
         score++;
         foodX = Math.random() * (canvas.width - 50);
         foodY = Math.random() * (canvas.height - 50);
+        crunchSound.play();
       }
     }
 
     function gameLoop() {
+      if (!gameRunning) return;
       update();
       draw();
       requestAnimationFrame(gameLoop);
     }
 
-    function startTimer() {
-      timeLeft = 45;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) clearInterval(timerInterval);
-      }, 1000);
-    }
-
-    function startGame() {
-      startTimer();
-      gameLoop();
-    }
-
-    // Handle arrow keys for desktop
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp') velocity.y = -3;
-      if (e.key === 'ArrowDown') velocity.y = 3;
-      if (e.key === 'ArrowLeft') velocity.x = -3;
-      if (e.key === 'ArrowRight') velocity.x = 3;
-    });
-
-    document.addEventListener('keyup', (e) => {
-      if (["ArrowUp", "ArrowDown"].includes(e.key)) velocity.y = 0;
-      if (["ArrowLeft", "ArrowRight"].includes(e.key)) velocity.x = 0;
-    });
+    restartButton.addEventListener('click', resetGame);
 
     const joystick = document.getElementById('joystick');
     const stick = document.getElementById('stick');
@@ -158,14 +180,28 @@
       center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
     });
 
-    // Wait until all images are loaded
-    let imagesLoaded = 0;
-    [cat, bg, food].forEach(img => {
-      img.onload = () => {
-        imagesLoaded++;
-        if (imagesLoaded === 3) startGame();
-      };
+    window.addEventListener('keydown', (e) => {
+      const speed = 5;
+      switch (e.key) {
+        case 'ArrowUp': velocity.y = -speed; break;
+        case 'ArrowDown': velocity.y = speed; break;
+        case 'ArrowLeft': velocity.x = -speed; break;
+        case 'ArrowRight': velocity.x = speed; break;
+      }
     });
+
+    window.addEventListener('keyup', (e) => {
+      switch (e.key) {
+        case 'ArrowUp':
+        case 'ArrowDown': velocity.y = 0; break;
+        case 'ArrowLeft':
+        case 'ArrowRight': velocity.x = 0; break;
+      }
+    });
+
+    cat.onload = bg.onload = food.onload = () => {
+      resetGame();
+    };
   </script>
 </body>
 </html>
