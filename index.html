@@ -78,6 +78,8 @@
     cat.src = 'my_cat.png';
 
     const bg = new Image();
+    const bg2 = new Image();
+    bg2.src = 'level2_bg.png';
     bg.src = 'my_bg.png';
 
     const food = new Image();
@@ -150,7 +152,8 @@ if (canvasAspect > bgAspect) {
 const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
-ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
+const activeBg = score >= 10 ? bg2 : bg;
+      ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
       if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
         // не рисуем кота (мигание)
