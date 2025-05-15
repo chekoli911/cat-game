@@ -50,42 +50,10 @@
       cursor: pointer;
       z-index: 10;
     }
-  
-    #mainMenu {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-    #menuImage {
-      max-width: 90%;
-      height: auto;
-    }
-    #startButton {
-      margin-top: 20px;
-      padding: 16px 32px;
-      font-size: 24px;
-      background-color: orange;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
   </style>
 </head>
 <body>
   <canvas id="game"></canvas>
-  <div id="mainMenu">
-    <img src="main_menu.png" id="menuImage" />
-    <button id="startButton">Покормить</button>
-  </div>
   <div id="joystick">
     <div id="stick"></div>
   </div>
@@ -394,7 +362,9 @@ if (score >= 110) {
 
     
 
-    cat.onload = bg.onload = food.onload = () => {};
+    cat.onload = bg.onload = food.onload = () => {
+      resetGame();
+    };
   
 window.addEventListener('keydown', (e) => {
   const speed = 5;
@@ -418,15 +388,6 @@ window.addEventListener('keyup', (e) => {
       velocity.x = 0; break;
   }
 });
-
-    const mainMenu = document.getElementById('mainMenu');
-    const startButton = document.getElementById('startButton');
-
-    startButton.addEventListener('click', () => {
-      mainMenu.style.display = 'none';
-      resetGame();
-    });
-
 </script>
 
 </body>
