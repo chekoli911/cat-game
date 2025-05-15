@@ -51,11 +51,12 @@
     canvas.height = window.innerHeight;
 
     const cat = new Image();
-    const bg = new Image();
-    const food = new Image();
-
     cat.src = 'my_cat.png';
+
+    const bg = new Image();
     bg.src = 'my_bg.png';
+
+    const food = new Image();
     food.src = 'food_new.png';
 
     let catX = 100, catY = 100;
@@ -63,19 +64,8 @@
     let foodX = Math.random() * (canvas.width - 50);
     let foodY = Math.random() * (canvas.height - 50);
     let score = 0;
-
-    let assetsLoaded = 0;
-
-    function checkAssetsAndStart() {
-      assetsLoaded++;
-      if (assetsLoaded === 3) {
-        requestAnimationFrame(gameLoop);
-      }
-    }
-
-    cat.onload = checkAssetsAndStart;
-    bg.onload = checkAssetsAndStart;
-    food.onload = checkAssetsAndStart;
+    let timeLeft = 45;
+    let timerInterval;
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -86,6 +76,7 @@
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
+      ctx.fillText(`Время: ${timeLeft}`, 20, 60);
     }
 
     function update() {
@@ -107,9 +98,35 @@
       requestAnimationFrame(gameLoop);
     }
 
+    function startTimer() {
+      timeLeft = 45;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) clearInterval(timerInterval);
+      }, 1000);
+    }
+
+    function startGame() {
+      startTimer();
+      gameLoop();
+    }
+
+    // Handle arrow keys for desktop
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') velocity.y = -3;
+      if (e.key === 'ArrowDown') velocity.y = 3;
+      if (e.key === 'ArrowLeft') velocity.x = -3;
+      if (e.key === 'ArrowRight') velocity.x = 3;
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (["ArrowUp", "ArrowDown"].includes(e.key)) velocity.y = 0;
+      if (["ArrowLeft", "ArrowRight"].includes(e.key)) velocity.x = 0;
+    });
+
     const joystick = document.getElementById('joystick');
     const stick = document.getElementById('stick');
-
     let center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
 
     joystick.addEventListener('touchmove', (e) => {
@@ -139,6 +156,15 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
+    });
+
+    // Wait until all images are loaded
+    let imagesLoaded = 0;
+    [cat, bg, food].forEach(img => {
+      img.onload = () => {
+        imagesLoaded++;
+        if (imagesLoaded === 3) startGame();
+      };
     });
   </script>
 </body>
