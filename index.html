@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Game</title>
   <style>
     body {
@@ -13,7 +13,7 @@
     canvas {
       display: block;
       background: url('my_bg.png') no-repeat center center;
-      background-size: contain;
+      background-size: cover;
     }
     #joystick {
       position: absolute;
@@ -114,7 +114,25 @@
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      
+// Центрированное масштабирование фона без искажения
+const bgAspect = bg.width / bg.height;
+const canvasAspect = canvas.width / canvas.height;
+
+let bgDrawWidth, bgDrawHeight;
+if (canvasAspect > bgAspect) {
+  bgDrawWidth = canvas.width;
+  bgDrawHeight = canvas.width / bgAspect;
+} else {
+  bgDrawHeight = canvas.height;
+  bgDrawWidth = canvas.height * bgAspect;
+}
+
+const bgX = (canvas.width - bgDrawWidth) / 2;
+const bgY = (canvas.height - bgDrawHeight) / 2;
+
+ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
+
       ctx.drawImage(cat, catX, catY, 100, 100);
       ctx.drawImage(food, foodX, foodY, 60, 60);
 
@@ -125,6 +143,8 @@
     }
 
     function update() {
+      // Обновление позиции кота с ограничениями
+
       catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
       catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
@@ -182,32 +202,37 @@
       center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
     });
 
+    
+
+    
+
     cat.onload = bg.onload = food.onload = () => {
       resetGame();
     };
+  
+window.addEventListener('keydown', (e) => {
+  const speed = 5;
+  switch (e.key) {
+    case 'w': case 'W': case 'ArrowUp': velocity.y = -speed; break;
+    case 's': case 'S': case 'ArrowDown': velocity.y = speed; break;
+    case 'a': case 'A': case 'ArrowLeft': velocity.x = -speed; break;
+    case 'd': case 'D': case 'ArrowRight': velocity.x = speed; break;
+  }
+});
 
-    window.addEventListener('keydown', (e) => {
-      const speed = 5;
-      switch (e.key) {
-        case 'w': case 'W': case 'ArrowUp': velocity.y = -speed; break;
-        case 's': case 'S': case 'ArrowDown': velocity.y = speed; break;
-        case 'a': case 'A': case 'ArrowLeft': velocity.x = -speed; break;
-        case 'd': case 'D': case 'ArrowRight': velocity.x = speed; break;
-      }
-    });
+window.addEventListener('keyup', (e) => {
+  switch (e.key) {
+    case 'w': case 'W':
+    case 's': case 'S':
+    case 'ArrowUp': case 'ArrowDown':
+      velocity.y = 0; break;
+    case 'a': case 'A':
+    case 'd': case 'D':
+    case 'ArrowLeft': case 'ArrowRight':
+      velocity.x = 0; break;
+  }
+});
+</script>
 
-    window.addEventListener('keyup', (e) => {
-      switch (e.key) {
-        case 'w': case 'W':
-        case 's': case 'S':
-        case 'ArrowUp': case 'ArrowDown':
-          velocity.y = 0; break;
-        case 'a': case 'A':
-        case 'd': case 'D':
-        case 'ArrowLeft': case 'ArrowRight':
-          velocity.x = 0; break;
-      }
-    });
-  </script>
 </body>
 </html>
