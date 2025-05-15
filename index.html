@@ -147,7 +147,9 @@
       requestAnimationFrame(gameLoop);
     }
 
-    restartButton.addEventListener('click', resetGame);
+    restartButton.addEventListener('click', () => {
+      window.location.href = 'https://chekoli911.github.io/cat-game/';
+    });
 
     const joystick = document.getElementById('joystick');
     const stick = document.getElementById('stick');
