@@ -129,7 +129,7 @@ bg12.src = '12_level.png';
       startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
-      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+      if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
         lives--;
         if (lives <= 0) {
@@ -204,9 +204,11 @@ if (score >= 110) {
       } else {
         ctx.drawImage(cat, catX, catY, 110, 110);
       }
-      ctx.globalAlpha = 0.7;
-      ctx.drawImage(catZloi, zloiX, zloiY, 110, 110);
-      ctx.globalAlpha = 1.0;
+      if (currentLevel > 1) {
+        ctx.globalAlpha = 0.7;
+        ctx.drawImage(catZloi, zloiX, zloiY, 110, 110);
+        ctx.globalAlpha = 1.0;
+      }
       ctx.drawImage(food, foodX, foodY, 110, 110);
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
@@ -217,6 +219,7 @@ if (score >= 110) {
     }
 
     function update() {
+      if (currentLevel > 1) {
       // Злой кот двигается к игроку
       const dzX = catX - zloiX;
       const dzY = catY - zloiY;
@@ -225,7 +228,13 @@ if (score >= 110) {
         zloiX += (dzX / distZloi) * 1.5;
         zloiY += (dzY / distZloi) * 1.5;
       }
-      // Обновление позиции кота с ограничениями
+            if (distZloi > 1) {
+        zloiX += (dzX / distZloi) * 0.75;
+        zloiY += (dzY / distZloi) * 0.75;
+      }
+    }
+
+    // Обновление позиции кота с ограничениями
 
       catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
       catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
@@ -300,7 +309,7 @@ if (score >= 110) {
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
-      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+      if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
         lives--;
         if (lives <= 0) {
