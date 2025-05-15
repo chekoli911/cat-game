@@ -79,15 +79,12 @@
 
     const bg = new Image();
     const bg2 = new Image();
-const bg = new Image();
-const bg2 = new Image();
 const bg3 = new Image();
 const bg4 = new Image();
-
-bg.src = 'my_bg.png';          // Уровень 1
-bg2.src = '3_level.png';       // Уровень 2
-bg3.src = '4_level.png';       // Уровень 3
-bg4.src = '4_level.png';       // Уровень 4
+    bg2.src = 'level2_bg.png';
+bg3.src = '3_level.png';
+bg4.src = '4_level.png';
+    bg.src = 'my_bg.png';
 
     const food = new Image();
     food.src = 'food_new.png';
@@ -96,11 +93,10 @@ bg4.src = '4_level.png';       // Уровень 4
     let velocity = { x: 0, y: 0 };
     let foodX, foodY;
     let score = 0;
-let levelReached = 1;
     let timeLeft = 45;
     let gameRunning = true;
     let lives = 3;
-    let level2Started = false;
+    let currentLevel = 1;
     let lastHitTime = 0;
     let lastFoodTime = Date.now();
     let timerInterval;
@@ -162,13 +158,13 @@ const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
 let activeBg = bg;
-    if (score >= 30) {
-      activeBg = bg4;
-    } else if (score >= 20) {
-      activeBg = bg3;
-    } else if (score >= 10) {
-      activeBg = bg2;
-    }
+if (score >= 30) {
+  activeBg = bg4;
+} else if (score >= 20) {
+  activeBg = bg3;
+} else if (score >= 10) {
+  activeBg = bg2;
+}
       ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
       if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
@@ -222,26 +218,21 @@ let activeBg = bg;
     function gameLoop() {
       if (!gameRunning) return;
       update();
-      if (!level2Started && score >= 10) {
-        level2Started = true;
+      if (score >= 30 && currentLevel < 4) {
+        currentLevel = 4;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 20 && currentLevel < 3) {
+        currentLevel = 3;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 10 && currentLevel < 2) {
+        currentLevel = 2;
         timeLeft = 45;
         startTimer();
       }
 
-      if (score >= 30 && levelReached < 4) {
-  levelReached = 4;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 20 && levelReached < 3) {
-  levelReached = 3;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 10 && levelReached < 2) {
-  levelReached = 2;
-  timeLeft = 45;
-  startTimer();
-}
-draw();
+      draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
       if (now - lastHitTime > 3000 && playerToZloi < 55) {
