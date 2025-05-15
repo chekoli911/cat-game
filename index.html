@@ -92,6 +92,7 @@
     let timeLeft = 45;
     let gameRunning = true;
     let lives = 3;
+    let level2Started = false;
     let lastHitTime = 0;
     let lastFoodTime = Date.now();
     let timerInterval;
@@ -206,6 +207,12 @@ const activeBg = score >= 10 ? bg2 : bg;
     function gameLoop() {
       if (!gameRunning) return;
       update();
+      if (!level2Started && score >= 10) {
+        level2Started = true;
+        timeLeft = 45;
+        startTimer();
+      }
+
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
