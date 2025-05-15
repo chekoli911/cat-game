@@ -70,8 +70,8 @@
 
     const catZloi = new Image();
     catZloi.src = 'cat_zloi.png';
-    let zloiX = Math.random() * (canvas.width - 200);
-    let zloiY = Math.random() * (canvas.height - 200);
+    let zloiX = Math.random() * (canvas.width - 110);
+    let zloiY = Math.random() * (canvas.height - 110);
     const restartButton = document.getElementById('restartButton');
 
     const cat = new Image();
@@ -89,6 +89,7 @@
     let score = 0;
     let timeLeft = 45;
     let gameRunning = true;
+    let lastFoodTime = Date.now();
     let timerInterval;
 
     function resetGame() {
@@ -102,9 +103,10 @@
       restartButton.style.display = 'none';
       startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 100) {
+      if (playerToZloi < 55) {
         gameRunning = false;
         restartButton.style.display = 'block';
+        return;
       }
       requestAnimationFrame(gameLoop);
     }
@@ -124,10 +126,30 @@
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(cat, catX, catY, 100, 100);
-      ctx.drawImage(food, foodX, foodY, 60, 60);
+      
+// Центрированное масштабирование фона без искажения
+const bgAspect = bg.width / bg.height;
+const canvasAspect = canvas.width / canvas.height;
 
+let bgDrawWidth, bgDrawHeight;
+if (canvasAspect > bgAspect) {
+  bgDrawWidth = canvas.width;
+  bgDrawHeight = canvas.width / bgAspect;
+} else {
+  bgDrawHeight = canvas.height;
+  bgDrawWidth = canvas.height * bgAspect;
+}
+
+const bgX = (canvas.width - bgDrawWidth) / 2;
+const bgY = (canvas.height - bgDrawHeight) / 2;
+
+ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
+
+      ctx.drawImage(cat, catX, catY, 110, 110);
+      ctx.globalAlpha = 0.7;
+      ctx.drawImage(catZloi, zloiX, zloiY, 110, 110);
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(food, foodX, foodY, 110, 110);
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
@@ -135,17 +157,23 @@
     }
 
     function update() {
+      // Злой кот двигается к игроку
+      const dzX = catX - zloiX;
+      const dzY = catY - zloiY;
+      const distZloi = Math.hypot(dzX, dzY);
+      if (distZloi > 1) {
+        zloiX += (dzX / distZloi) * 1.5;
+        zloiY += (dzY / distZloi) * 1.5;
+      }
       // Обновление позиции кота с ограничениями
 
       catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
       catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
-      const dzX = foodX - zloiX;
-      const dzY = foodY - zloiY;
-      const distZloi = Math.hypot(dzX, dzY);
-      if (distZloi > 1) {
-        zloiX += (dzX / distZloi) * 1.5;
-        zloiY += (dzY / distZloi) * 1.5;
+      if (Date.now() - lastFoodTime > 4000) {
+        foodX = Math.random() * (canvas.width - 50);
+        foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
       }
 
       const dx = catX - foodX;
@@ -154,6 +182,7 @@
         score++;
         foodX = Math.random() * (canvas.width - 50);
         foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
       }
@@ -164,9 +193,10 @@
       update();
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 100) {
+      if (playerToZloi < 55) {
         gameRunning = false;
         restartButton.style.display = 'block';
+        return;
       }
       requestAnimationFrame(gameLoop);
     }
