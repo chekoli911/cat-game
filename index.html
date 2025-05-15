@@ -105,8 +105,9 @@
       restartButton.style.display = 'none';
       startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 55 && Date.now() - lastHitTime > 3000) {
-        lastHitTime = Date.now();
+      const now = Date.now();
+      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+        lastHitTime = now;
         lives--;
         lives--;
         if (lives <= 0) {
@@ -205,8 +206,9 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       update();
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 55 && Date.now() - lastHitTime > 3000) {
-        lastHitTime = Date.now();
+      const now = Date.now();
+      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+        lastHitTime = now;
         lives--;
         lives--;
         if (lives <= 0) {
