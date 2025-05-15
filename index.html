@@ -67,8 +67,6 @@
   }
 
   function create() {
-  score = 0;
-  timeLeft = 45;
     this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'bg')
         .setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
 
@@ -130,5 +128,64 @@
     }
   });
 </script>
+
+<style>
+  .touch-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .touch-button {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    background: rgba(255,255,255,0.7);
+    border: 2px solid #333;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 60px;
+    user-select: none;
+  }
+
+  .touch-dpad {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .touch-horiz {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+</style>
+
+<div class="touch-controls">
+  <div class="touch-dpad">
+    <div class="touch-button" id="btn-up">↑</div>
+    <div class="touch-horiz">
+      <div class="touch-button" id="btn-left">←</div>
+      <div class="touch-button" id="btn-down">↓</div>
+      <div class="touch-button" id="btn-right">→</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function simulateKey(code) {
+    window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: code, which: code }));
+  }
+
+  document.getElementById('btn-up').ontouchstart = () => simulateKey(38);
+  document.getElementById('btn-down').ontouchstart = () => simulateKey(40);
+  document.getElementById('btn-left').ontouchstart = () => simulateKey(37);
+  document.getElementById('btn-right').ontouchstart = () => simulateKey(39);
+</script>
+
 </body>
 </html>
