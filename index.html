@@ -125,8 +125,10 @@
     }
 
     function update() {
-      catX += velocity.x;
-      catY += velocity.y;
+      // Обновление позиции кота с ограничениями
+
+      catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
+      catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
       const dx = catX - foodX;
       const dy = catY - foodY;
