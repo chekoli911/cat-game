@@ -184,40 +184,37 @@
       center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
     });
 
-    window.addEventListener('keydown', (e) => {
-      const speed = 5;
-      switch (e.key) {
-        case 'w': case 'W': velocity.y = -5; break;
-        case 's': case 'S': velocity.y = 5; break;
-        case 'a': case 'A': velocity.x = -5; break;
-        case 'd': case 'D': velocity.x = 5; break;
-        case 'ArrowUp': velocity.y = -speed; break;
-        case 'ArrowDown': velocity.y = speed; break;
-        case 'a': case 'A':
-        case 'ArrowLeft': velocity.x = -speed; break;
-        case 'ArrowRight': velocity.x = speed; break;
-      }
-    });
+    
 
-    window.addEventListener('keyup', (e) => {
-      switch (e.key) {
-        case 'w': case 'W': velocity.y = -5; break;
-        case 's': case 'S': velocity.y = 5; break;
-        case 'a': case 'A': velocity.x = -5; break;
-        case 'd': case 'D': velocity.x = 5; break;
-        case 'ArrowUp':
-        case 's': case 'S':
-        case 'ArrowDown': velocity.y = 0; break;
-        case 'a': case 'A':
-        case 'ArrowLeft':
-        case 'd': case 'D':
-        case 'ArrowRight': velocity.x = 0; break;
-      }
-    });
+    
 
     cat.onload = bg.onload = food.onload = () => {
       resetGame();
     };
-  </script>
+  
+window.addEventListener('keydown', (e) => {
+  const speed = 5;
+  switch (e.key) {
+    case 'w': case 'W': case 'ArrowUp': velocity.y = -speed; break;
+    case 's': case 'S': case 'ArrowDown': velocity.y = speed; break;
+    case 'a': case 'A': case 'ArrowLeft': velocity.x = -speed; break;
+    case 'd': case 'D': case 'ArrowRight': velocity.x = speed; break;
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  switch (e.key) {
+    case 'w': case 'W':
+    case 's': case 'S':
+    case 'ArrowUp': case 'ArrowDown':
+      velocity.y = 0; break;
+    case 'a': case 'A':
+    case 'd': case 'D':
+    case 'ArrowLeft': case 'ArrowRight':
+      velocity.x = 0; break;
+  }
+});
+</script>
+
 </body>
 </html>
