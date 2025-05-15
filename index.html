@@ -90,6 +90,7 @@
     let timeLeft = 45;
     let gameRunning = true;
     let lives = 3;
+    let lastHitTime = 0;
     let lastFoodTime = Date.now();
     let timerInterval;
 
@@ -104,7 +105,9 @@
       restartButton.style.display = 'none';
       startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 55) {
+      if (playerToZloi < 55 && Date.now() - lastHitTime > 3000) {
+        lastHitTime = Date.now();
+        lives--;
         lives--;
         if (lives <= 0) {
         gameRunning = false;
@@ -149,7 +152,11 @@ const bgY = (canvas.height - bgDrawHeight) / 2;
 
 ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
-      ctx.drawImage(cat, catX, catY, 110, 110);
+      if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
+        // не рисуем кота (мигание)
+      } else {
+        ctx.drawImage(cat, catX, catY, 110, 110);
+      }
       ctx.globalAlpha = 0.7;
       ctx.drawImage(catZloi, zloiX, zloiY, 110, 110);
       ctx.globalAlpha = 1.0;
@@ -198,7 +205,9 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       update();
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
-      if (playerToZloi < 55) {
+      if (playerToZloi < 55 && Date.now() - lastHitTime > 3000) {
+        lastHitTime = Date.now();
+        lives--;
         lives--;
         if (lives <= 0) {
         gameRunning = false;
