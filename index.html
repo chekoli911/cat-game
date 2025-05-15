@@ -102,10 +102,18 @@ bg11.src = '11_level.png';
 bg12.src = '12_level.png';
     bg.src = 'my_bg.png';
 
-    const food = new Image();
+    const mouseImg = new Image();
+mouseImg.src = 'mouse_bonus.png';
+
+const food = new Image();
     food.src = 'food_new.png';
 
     let catX = 100, catY = 100;
+
+let mouseX = 0, mouseY = 0;
+let mouseVisible = false;
+let mouseCooldown = 0;
+
     let velocity = { x: 0, y: 0 };
     let foodX, foodY;
     let score = 0;
@@ -210,6 +218,11 @@ if (score >= 110) {
         ctx.globalAlpha = 1.0;
       }
       ctx.drawImage(food, foodX, foodY, 110, 110);
+
+      if (mouseVisible) {
+        ctx.drawImage(mouseImg, mouseX, mouseY, 50, 50);
+      }
+
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
@@ -233,6 +246,32 @@ if (score >= 110) {
         zloiY += (dzY / distZloi) * 0.35;
       }
     }
+
+    
+      // Мышка появляется раз в 20 секунд
+      const now = Date.now();
+      if (!mouseVisible && now - mouseCooldown > 20000) {
+        mouseX = Math.random() * (canvas.width - 50);
+        mouseY = Math.random() * (canvas.height - 50);
+        mouseVisible = true;
+      }
+
+      // Случайное блуждание мышки
+      if (mouseVisible) {
+        mouseX += (Math.random() - 0.5) * 1.5;
+        mouseY += (Math.random() - 0.5) * 1.5;
+        mouseX = Math.max(0, Math.min(canvas.width - 50, mouseX));
+        mouseY = Math.max(0, Math.min(canvas.height - 50, mouseY));
+      }
+
+      // Съедание мышки
+      let dxMouse = catX - mouseX;
+      let dyMouse = catY - mouseY;
+      if (mouseVisible && Math.hypot(dxMouse, dyMouse) < 60) {
+        if (lives < 3) lives++;
+        mouseVisible = false;
+        mouseCooldown = now;
+      }
 
     // Обновление позиции кота с ограничениями
 
