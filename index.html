@@ -82,23 +82,23 @@
 const bg3 = new Image();
 const bg4 = new Image();
 const bg5 = new Image();
-const bg6 = new Image();
-const bg7 = new Image();
-const bg8 = new Image();
-const bg9 = new Image();
-const bg10 = new Image();
-const bg11 = new Image();
-const bg12 = new Image();
     bg2.src = 'level2_bg.png';
 bg3.src = '3_level.png';
 bg4.src = '4_level.png';
 bg5.src = '5_level.png';
+const bg6 = new Image();
 bg6.src = '6_level.png';
+const bg7 = new Image();
 bg7.src = '7_level.png';
+const bg8 = new Image();
 bg8.src = '8_level.png';
+const bg9 = new Image();
 bg9.src = '9_level.png';
+const bg10 = new Image();
 bg10.src = '10_level.png';
+const bg11 = new Image();
 bg11.src = '11_level.png';
+const bg12 = new Image();
 bg12.src = '12_level.png';
     bg.src = 'my_bg.png';
 
@@ -174,19 +174,29 @@ const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
 let activeBg = bg;
-if (score >= 110) activeBg = bg12;
-if (score >= 100) activeBg = bg11;
-if (score >= 90) activeBg = bg10;
-if (score >= 80) activeBg = bg9;
-if (score >= 70) activeBg = bg8;
-if (score >= 60) activeBg = bg7;
-if (score >= 50) activeBg = bg6;
-if (score >= 40) activeBg = bg5;
-if (score >= 30) activeBg = bg4;
-if (score >= 20) activeBg = bg3;
-if (score >= 10) activeBg = bg2;
+if (score >= 110) {
+  activeBg = bg12;
+} else if (score >= 100) {
+  activeBg = bg11;
+} else if (score >= 90) {
+  activeBg = bg10;
+} else if (score >= 80) {
+  activeBg = bg9;
+} else if (score >= 70) {
+  activeBg = bg8;
+} else if (score >= 60) {
+  activeBg = bg7;
+} else if (score >= 50) {
   activeBg = bg6;
 } else if (score >= 40) {
+  activeBg = bg5;
+} else if (score >= 30) {
+  activeBg = bg4;
+} else if (score >= 20) {
+  activeBg = bg3;
+} else if (score >= 10) {
+  activeBg = bg2;
+}
   activeBg = bg5;
 } else if (score >= 30) {
   activeBg = bg4;
@@ -210,7 +220,7 @@ if (score >= 10) activeBg = bg2;
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
       ctx.fillText(`Время: ${timeLeft}`, 20, 60);
-      ctx.fillText(`Уровень: ${currentLevel}`, 20, 120);
+      ctx.fillText(`Уровень: ${currentLevel}`, 20, 90);
       ctx.fillText(`Жизни: ${'💛'.repeat(lives)}`, 20, 90);
     }
 
@@ -269,15 +279,27 @@ if (score >= 10) activeBg = bg2;
         currentLevel = 8;
         timeLeft = 45;
         startTimer();
-      } else if (score >= 50 && currentLevel < 6) {
-        currentLevel = 6;
-        timeLeft = 45;
-        startTimer();
-      }
-        currentLevel = 6;
+      } else if (score >= 60 && currentLevel < 7) {
+        currentLevel = 7;
         timeLeft = 45;
         startTimer();
       } else if (score >= 40 && currentLevel < 5) {
+        currentLevel = 5;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 30 && currentLevel < 4) {
+        currentLevel = 4;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 20 && currentLevel < 3) {
+        currentLevel = 3;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 10 && currentLevel < 2) {
+        currentLevel = 2;
+        timeLeft = 45;
+        startTimer();
+      }
         currentLevel = 5;
         timeLeft = 45;
         startTimer();
