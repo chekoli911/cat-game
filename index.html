@@ -1,191 +1,145 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Котик и корм</title>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cat Game</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #000; }
-    canvas { display: block; }
-    #start-screen, #restart-screen {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
     }
-    #restart-screen { display: none; }
-    button {
-      font-size: 2em; padding: 0.6em 1.4em;
-      border: none; border-radius: 10px;
-      background: #fff; color: #333;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      cursor: pointer;
+    canvas {
+      display: block;
+      background: url('my_bg.png') no-repeat center center;
+      background-size: cover;
+    }
+    #joystick {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      touch-action: none;
+    }
+    #stick {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-<div id="start-screen">
-  <button id="start-button">Играть</button>
-</div>
-<div id="restart-screen">
-  <button id="restart-button">Сыграть ещё</button>
-</div>
-<script>
-  let cat, cursors, foods, score = 0, scoreText, chompSound, timerText, timeLeft = 45;
-  let config, currentGame;
-
-  document.getElementById("start-button").addEventListener("click", () => {
-    document.getElementById("start-screen").style.display = "none";
-    startGame();
-  });
-
-  document.getElementById("restart-button").addEventListener("click", () => {
-    document.getElementById("restart-screen").style.display = "none";
-    document.querySelector("canvas")?.remove();
-    if (currentGame) currentGame.destroy(true);
-    setTimeout(() => startGame(), 100);
-  });
-
-  function startGame() {
-    config = {
-      type: Phaser.AUTO,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      backgroundColor: '#000000',
-      physics: { default: 'arcade' },
-      scene: { preload, create, update }
-    };
-    currentGame = new Phaser.Game(config);
-  }
-
-  function preload() {
-    this.load.image('cat', 'my_cat.png');
-    this.load.image('food', 'food_new.png');
-    this.load.image('bg', 'my_bg.png');
-    this.load.audio('chomp', 'crunch.mp3');
-  }
-
-  function create() {
-    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, 'bg')
-        .setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
-
-    cat = this.physics.add.sprite(400, 300, 'cat').setScale(0.12);
-    cat.setCollideWorldBounds(true);
-    cursors = this.input.keyboard.createCursorKeys();
-    foods = this.physics.add.group();
-    chompSound = this.sound.add('chomp');
-
-    scoreText = this.add.text(16, 16, 'Очки: 0', { fontSize: '24px', fill: '#fff' }).setScrollFactor(0);
-    timerText = this.add.text(16, 48, 'Время: 45', { fontSize: '24px', fill: '#fff' }).setScrollFactor(0);
-
-    spawnFood.call(this);
-    this.physics.add.overlap(cat, foods, collectFood, null, this);
-
-    timeLeft = 45;
-    this.time.addEvent({
-      delay: 1000,
-      callback: () => {
-        timeLeft--;
-        timerText.setText('Время: ' + timeLeft);
-        if (timeLeft <= 0) {
-          this.physics.pause();
-          scoreText.setText('Результат: ' + score);
-          timerText.setText('Конец!');
-          document.getElementById("restart-screen").style.display = "flex";
-        }
-      },
-      loop: true
-    });
-  }
-
-  function update() {
-    cat.setVelocity(0);
-    if (cursors.left.isDown) cat.setVelocityX(-200);
-    if (cursors.right.isDown) cat.setVelocityX(200);
-    if (cursors.up.isDown) cat.setVelocityY(-200);
-    if (cursors.down.isDown) cat.setVelocityY(200);
-  }
-
-  function spawnFood() {
-    const x = Phaser.Math.Between(50, this.sys.game.config.width - 50);
-    const y = Phaser.Math.Between(50, this.sys.game.config.height - 50);
-    const food = foods.create(x, y, 'food');
-    food.setScale(0.125);
-  }
-
-  function collectFood(cat, food) {
-    food.destroy();
-    score += 1;
-    scoreText.setText('Очки: ' + score);
-    chompSound.play();
-    spawnFood.call(this);
-  }
-
-  window.addEventListener('resize', () => {
-    if (currentGame) {
-      currentGame.scale.resize(window.innerWidth, window.innerHeight);
-    }
-  });
-</script>
-
-<style>
-  .touch-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-  }
-
-  .touch-button {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
-    background: rgba(255,255,255,0.7);
-    border: 2px solid #333;
-    border-radius: 10px;
-    text-align: center;
-    line-height: 60px;
-    user-select: none;
-  }
-
-  .touch-dpad {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .touch-horiz {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-</style>
-
-<div class="touch-controls">
-  <div class="touch-dpad">
-    <div class="touch-button" id="btn-up">↑</div>
-    <div class="touch-horiz">
-      <div class="touch-button" id="btn-left">←</div>
-      <div class="touch-button" id="btn-down">↓</div>
-      <div class="touch-button" id="btn-right">→</div>
-    </div>
+  <canvas id="game"></canvas>
+  <div id="joystick">
+    <div id="stick"></div>
   </div>
-</div>
 
-<script>
-  function simulateKey(code) {
-    window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: code, which: code }));
-  }
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-  document.getElementById('btn-up').ontouchstart = () => simulateKey(38);
-  document.getElementById('btn-down').ontouchstart = () => simulateKey(40);
-  document.getElementById('btn-left').ontouchstart = () => simulateKey(37);
-  document.getElementById('btn-right').ontouchstart = () => simulateKey(39);
-</script>
+    const cat = new Image();
+    const bg = new Image();
+    const food = new Image();
 
+    cat.src = 'my_cat.png';
+    bg.src = 'my_bg.png';
+    food.src = 'food_new.png';
+
+    let catX = 100, catY = 100;
+    let velocity = { x: 0, y: 0 };
+    let foodX = Math.random() * (canvas.width - 50);
+    let foodY = Math.random() * (canvas.height - 50);
+    let score = 0;
+
+    let assetsLoaded = 0;
+
+    function checkAssetsAndStart() {
+      assetsLoaded++;
+      if (assetsLoaded === 3) {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    cat.onload = checkAssetsAndStart;
+    bg.onload = checkAssetsAndStart;
+    food.onload = checkAssetsAndStart;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(cat, catX, catY, 100, 100);
+      ctx.drawImage(food, foodX, foodY, 60, 60);
+
+      ctx.fillStyle = 'white';
+      ctx.font = '24px sans-serif';
+      ctx.fillText(`Очки: ${score}`, 20, 30);
+    }
+
+    function update() {
+      catX += velocity.x;
+      catY += velocity.y;
+
+      const dx = catX - foodX;
+      const dy = catY - foodY;
+      if (Math.hypot(dx, dy) < 50) {
+        score++;
+        foodX = Math.random() * (canvas.width - 50);
+        foodY = Math.random() * (canvas.height - 50);
+      }
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    const joystick = document.getElementById('joystick');
+    const stick = document.getElementById('stick');
+
+    let center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
+
+    joystick.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      const dx = touch.clientX - center.x;
+      const dy = touch.clientY - center.y;
+      const dist = Math.min(Math.hypot(dx, dy), 40);
+      const angle = Math.atan2(dy, dx);
+      const x = dist * Math.cos(angle);
+      const y = dist * Math.sin(angle);
+
+      stick.style.left = `${60 + x - 20}px`;
+      stick.style.top = `${60 + y - 20}px`;
+
+      velocity.x = x * 0.2;
+      velocity.y = y * 0.2;
+    });
+
+    joystick.addEventListener('touchend', () => {
+      stick.style.left = '40px';
+      stick.style.top = '40px';
+      velocity.x = 0;
+      velocity.y = 0;
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
+    });
+  </script>
 </body>
 </html>
