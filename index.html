@@ -81,9 +81,11 @@
     const bg2 = new Image();
 const bg3 = new Image();
 const bg4 = new Image();
+const bg5 = new Image();
     bg2.src = 'level2_bg.png';
 bg3.src = '3_level.png';
 bg4.src = '4_level.png';
+bg5.src = '5_level.png';
     bg.src = 'my_bg.png';
 
     const food = new Image();
@@ -158,7 +160,9 @@ const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
 let activeBg = bg;
-if (score >= 30) {
+if (score >= 40) {
+  activeBg = bg5;
+} else if (score >= 30) {
   activeBg = bg4;
 } else if (score >= 20) {
   activeBg = bg3;
@@ -180,6 +184,7 @@ if (score >= 30) {
       ctx.font = '24px sans-serif';
       ctx.fillText(`Очки: ${score}`, 20, 30);
       ctx.fillText(`Время: ${timeLeft}`, 20, 60);
+      ctx.fillText(`Уровень: ${currentLevel}`, 20, 90);
       ctx.fillText(`Жизни: ${'💛'.repeat(lives)}`, 20, 90);
     }
 
@@ -218,7 +223,11 @@ if (score >= 30) {
     function gameLoop() {
       if (!gameRunning) return;
       update();
-      if (score >= 30 && currentLevel < 4) {
+      if (score >= 40 && currentLevel < 5) {
+        currentLevel = 5;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 30 && currentLevel < 4) {
         currentLevel = 4;
         timeLeft = 45;
         startTimer();
