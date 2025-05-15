@@ -134,8 +134,8 @@ const bgY = (canvas.height - bgDrawHeight) / 2;
 
 ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
-      ctx.drawImage(cat, catX, catY, 200, 200);
-      ctx.drawImage(food, foodX, foodY, 120, 120);
+      ctx.drawImage(cat, catX, catY, 100, 100);
+      ctx.drawImage(food, foodX, foodY, 60, 60);
 
       ctx.fillStyle = 'white';
       ctx.font = '24px sans-serif';
@@ -146,8 +146,8 @@ ctx.drawImage(bg, bgX, bgY, bgDrawWidth, bgDrawHeight);
     function update() {
       // Обновление позиции кота с ограничениями
 
-      catX = Math.max(0, Math.min(canvas.width - 200, catX + velocity.x));
-      catY = Math.max(0, Math.min(canvas.height - 200, catY + velocity.y));
+      catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
+      catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
 
       if (Date.now() - lastFoodTime > 4000) {
         foodX = Math.random() * (canvas.width - 50);
