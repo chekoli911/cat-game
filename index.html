@@ -82,10 +82,14 @@
 const bg3 = new Image();
 const bg4 = new Image();
 const bg5 = new Image();
+const bg6 = new Image();
+const bg7 = new Image();
     bg2.src = 'level2_bg.png';
 bg3.src = '3_level.png';
 bg4.src = '4_level.png';
 bg5.src = '5_level.png';
+bg6.src = '6_level.png';
+bg7.src = '7_level.png';
     bg.src = 'my_bg.png';
 
     const food = new Image();
@@ -160,7 +164,11 @@ const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
 let activeBg = bg;
-if (score >= 40) {
+if (score >= 60) {
+  activeBg = bg7;
+} else if (score >= 50) {
+  activeBg = bg6;
+} else if (score >= 40) {
   activeBg = bg5;
 } else if (score >= 30) {
   activeBg = bg4;
@@ -223,7 +231,15 @@ if (score >= 40) {
     function gameLoop() {
       if (!gameRunning) return;
       update();
-      if (score >= 40 && currentLevel < 5) {
+      if (score >= 60 && currentLevel < 7) {
+        currentLevel = 7;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 50 && currentLevel < 6) {
+        currentLevel = 6;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 40 && currentLevel < 5) {
         currentLevel = 5;
         timeLeft = 45;
         startTimer();
