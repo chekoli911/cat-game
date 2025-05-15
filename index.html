@@ -1,87 +1,345 @@
-// Сюда вставляется весь HTML + JS код с новыми уровнями и логикой таймера
-// Только демонстрационный блок логики
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cat Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    canvas {
+      display: block;
+      background: url('my_bg.png') no-repeat center center;
+      background-size: cover;
+    }
+    #joystick {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      touch-action: none;
+    }
+    #stick {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #restartButton {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+  <button id="restartButton">Сыграть ещё</button>
+  <audio id="crunchSound" src="crunch.mp3"></audio>
 
-const bg8 = new Image();
-const bg9 = new Image();
-const bg10 = new Image();
-const bg11 = new Image();
-const bg12 = new Image();
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-bg8.src = '8_level.png';
-bg9.src = '9_level.png';
-bg10.src = '10_level.png';
-bg11.src = '11_level.png';
-bg12.src = '12_level.png';
+    const crunchSound = document.getElementById('crunchSound');
 
-// Внутри функции отрисовки
+    const catZloi = new Image();
+    catZloi.src = 'cat_zloi.png';
+    let zloiX = Math.random() * (canvas.width - 110);
+    let zloiY = Math.random() * (canvas.height - 110);
+    const restartButton = document.getElementById('restartButton');
+
+    const cat = new Image();
+    cat.src = 'my_cat.png';
+
+    const bg = new Image();
+    const bg2 = new Image();
+const bg3 = new Image();
+const bg4 = new Image();
+const bg5 = new Image();
+const bg6 = new Image();
+const bg7 = new Image();
+    bg2.src = 'level2_bg.png';
+bg3.src = '3_level.png';
+bg4.src = '4_level.png';
+bg5.src = '5_level.png';
+bg6.src = '6_level.png';
+bg7.src = '7_level.png';
+    bg.src = 'my_bg.png';
+
+    const food = new Image();
+    food.src = 'food_new.png';
+
+    let catX = 100, catY = 100;
+    let velocity = { x: 0, y: 0 };
+    let foodX, foodY;
+    let score = 0;
+    let timeLeft = 45;
+    let gameRunning = true;
+    let lives = 3;
+    let currentLevel = 1;
+    let lastHitTime = 0;
+    let lastFoodTime = Date.now();
+    let timerInterval;
+
+    function resetGame() {
+      catX = 100;
+      catY = 100;
+      score = 0;
+      timeLeft = 45;
+      gameRunning = true;
+      foodX = Math.random() * (canvas.width - 50);
+      foodY = Math.random() * (canvas.height - 50);
+      restartButton.style.display = 'none';
+      startTimer();
+      const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
+      const now = Date.now();
+      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+        lastHitTime = now;
+        lives--;
+        if (lives <= 0) {
+        gameRunning = false;
+        restartButton.style.display = 'block';
+        return;
+      }
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+        } else {
+          clearInterval(timerInterval);
+          gameRunning = false;
+          restartButton.style.display = 'block';
+        }
+      }, 1000);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+// Центрированное масштабирование фона без искажения
+const bgAspect = bg.width / bg.height;
+const canvasAspect = canvas.width / canvas.height;
+
+let bgDrawWidth, bgDrawHeight;
+if (canvasAspect > bgAspect) {
+  bgDrawWidth = canvas.width;
+  bgDrawHeight = canvas.width / bgAspect;
+} else {
+  bgDrawHeight = canvas.height;
+  bgDrawWidth = canvas.height * bgAspect;
+}
+
+const bgX = (canvas.width - bgDrawWidth) / 2;
+const bgY = (canvas.height - bgDrawHeight) / 2;
+
 let activeBg = bg;
-if (score >= 120) {
-  activeBg = bg12;
-} else if (score >= 110) {
-  activeBg = bg11;
-} else if (score >= 100) {
-  activeBg = bg10;
-} else if (score >= 90) {
-  activeBg = bg9;
-} else if (score >= 80) {
-  activeBg = bg8;
-} else if (score >= 70) {
+if (score >= 60) {
   activeBg = bg7;
-} else if (score >= 60) {
-  activeBg = bg6;
 } else if (score >= 50) {
-  activeBg = bg5;
+  activeBg = bg6;
 } else if (score >= 40) {
-  activeBg = bg4;
+  activeBg = bg5;
 } else if (score >= 30) {
-  activeBg = bg3;
+  activeBg = bg4;
 } else if (score >= 20) {
+  activeBg = bg3;
+} else if (score >= 10) {
   activeBg = bg2;
 }
+      ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
-// Внутри gameLoop() или update()
-if (score >= 120 && currentLevel < 12) {
-  currentLevel = 12;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 110 && currentLevel < 11) {
-  currentLevel = 11;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 100 && currentLevel < 10) {
-  currentLevel = 10;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 90 && currentLevel < 9) {
-  currentLevel = 9;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 80 && currentLevel < 8) {
-  currentLevel = 8;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 70 && currentLevel < 7) {
-  currentLevel = 7;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 60 && currentLevel < 6) {
-  currentLevel = 6;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 50 && currentLevel < 5) {
-  currentLevel = 5;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 40 && currentLevel < 4) {
-  currentLevel = 4;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 30 && currentLevel < 3) {
-  currentLevel = 3;
-  timeLeft = 45;
-  startTimer();
-} else if (score >= 20 && currentLevel < 2) {
-  currentLevel = 2;
-  timeLeft = 45;
-  startTimer();
-}
+      if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
+        // не рисуем кота (мигание)
+      } else {
+        ctx.drawImage(cat, catX, catY, 110, 110);
+      }
+      ctx.globalAlpha = 0.7;
+      ctx.drawImage(catZloi, zloiX, zloiY, 110, 110);
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(food, foodX, foodY, 110, 110);
+      ctx.fillStyle = 'white';
+      ctx.font = '24px sans-serif';
+      ctx.fillText(`Очки: ${score}`, 20, 30);
+      ctx.fillText(`Время: ${timeLeft}`, 20, 60);
+      ctx.fillText(`Уровень: ${currentLevel}`, 20, 120);
+      ctx.fillText(`Жизни: ${'💛'.repeat(lives)}`, 20, 90);
+    }
+
+    function update() {
+      // Злой кот двигается к игроку
+      const dzX = catX - zloiX;
+      const dzY = catY - zloiY;
+      const distZloi = Math.hypot(dzX, dzY);
+      if (distZloi > 1) {
+        zloiX += (dzX / distZloi) * 1.5;
+        zloiY += (dzY / distZloi) * 1.5;
+      }
+      // Обновление позиции кота с ограничениями
+
+      catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
+      catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
+
+      if (Date.now() - lastFoodTime > 4000) {
+        foodX = Math.random() * (canvas.width - 50);
+        foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
+      }
+
+      const dx = catX - foodX;
+      const dy = catY - foodY;
+      if (Math.hypot(dx, dy) < 50) {
+        score++;
+        foodX = Math.random() * (canvas.width - 50);
+        foodY = Math.random() * (canvas.height - 50);
+        lastFoodTime = Date.now();
+        lastFoodTime = Date.now();
+        crunchSound.play();
+      }
+    }
+
+    function gameLoop() {
+      if (!gameRunning) return;
+      update();
+      if (score >= 60 && currentLevel < 7) {
+        currentLevel = 7;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 50 && currentLevel < 6) {
+        currentLevel = 6;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 40 && currentLevel < 5) {
+        currentLevel = 5;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 30 && currentLevel < 4) {
+        currentLevel = 4;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 20 && currentLevel < 3) {
+        currentLevel = 3;
+        timeLeft = 45;
+        startTimer();
+      } else if (score >= 10 && currentLevel < 2) {
+        currentLevel = 2;
+        timeLeft = 45;
+        startTimer();
+      }
+
+      draw();
+      const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
+      const now = Date.now();
+      if (now - lastHitTime > 3000 && playerToZloi < 55) {
+        lastHitTime = now;
+        lives--;
+        if (lives <= 0) {
+        gameRunning = false;
+        restartButton.style.display = 'block';
+        return;
+      }
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    restartButton.addEventListener('click', () => {
+      window.location.href = 'https://chekoli911.github.io/cat-game/';
+    });
+
+    const joystick = document.getElementById('joystick');
+    const stick = document.getElementById('stick');
+    let center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
+
+    joystick.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      const dx = touch.clientX - center.x;
+      const dy = touch.clientY - center.y;
+      const dist = Math.min(Math.hypot(dx, dy), 40);
+      const angle = Math.atan2(dy, dx);
+      const x = dist * Math.cos(angle);
+      const y = dist * Math.sin(angle);
+
+      stick.style.left = `${60 + x - 20}px`;
+      stick.style.top = `${60 + y - 20}px`;
+
+      velocity.x = x * 0.08;
+      velocity.y = y * 0.08;
+    });
+
+    joystick.addEventListener('touchend', () => {
+      stick.style.left = '40px';
+      stick.style.top = '40px';
+      velocity.x = 0;
+      velocity.y = 0;
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
+    });
+
+    
+
+    
+
+    cat.onload = bg.onload = food.onload = () => {
+      resetGame();
+    };
+  
+window.addEventListener('keydown', (e) => {
+  const speed = 5;
+  switch (e.key) {
+    case 'w': case 'W': case 'ArrowUp': velocity.y = -speed; break;
+    case 's': case 'S': case 'ArrowDown': velocity.y = speed; break;
+    case 'a': case 'A': case 'ArrowLeft': velocity.x = -speed; break;
+    case 'd': case 'D': case 'ArrowRight': velocity.x = speed; break;
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  switch (e.key) {
+    case 'w': case 'W':
+    case 's': case 'S':
+    case 'ArrowUp': case 'ArrowDown':
+      velocity.y = 0; break;
+    case 'a': case 'A':
+    case 'd': case 'D':
+    case 'ArrowLeft': case 'ArrowRight':
+      velocity.x = 0; break;
+  }
+});
+</script>
+
+</body>
+</html>
