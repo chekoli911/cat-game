@@ -61,7 +61,7 @@
   <audio id="crunchSound" src="crunch.mp3"></audio>
   <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
   <audio id="mouseSound" src="intro-sound-2-269294.mp3"></audio>
-  <audio id="bgMusic" src="terra-short-background-music-336035.mp3" loop></audio>
+  <audio id="bgMusic" src="terra-short-background-music-336035.mp3" loop autoplay></audio>
 
   <script>
     const canvas = document.getElementById('game');
@@ -74,7 +74,7 @@ const hitSound = document.getElementById('hitSound');
 const mouseSound = document.getElementById('mouseSound');
 const bgMusic = document.getElementById('bgMusic');
 bgMusic.volume = 0.4;
-
+bgMusic.play().catch(() => {});
 
     const catZloi = new Image();
     catZloi.src = 'cat_zloi.png';
@@ -345,15 +345,6 @@ if (score >= 110) {
         lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
-        if (score === 1) {
-          if (musicEnabled) {
-            bgMusic.play().then(() => {
-              musicToggle.textContent = "🔊 Музыка";
-            }).catch(() => {
-              musicToggle.textContent = "🚫 Отклонено";
-            });
-          }
-        }
       }
     }
 
@@ -514,21 +505,6 @@ window.addEventListener('keyup', (e) => {
 
     showHighscores();
 
-
-    const musicToggle = document.getElementById("musicToggle");
-    let musicEnabled = true;
-
-    musicToggle.addEventListener("click", () => {
-      musicEnabled = !musicEnabled;
-      if (musicEnabled) {
-        
-        musicToggle.textContent = "🔊 Музыка";
-      } else {
-        bgMusic.pause();
-        musicToggle.textContent = "🔇 Без звука";
-      }
-    });
-
 </script>
 
 
@@ -540,9 +516,6 @@ window.addEventListener('keyup', (e) => {
     <div><b>Топ рекордов:</b></div>
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
-
-
-  <button id="musicToggle" style="position: absolute; bottom: 10px; right: 10px; z-index: 9999; font-size: 16px;">🔊 Музыка</button>
 
 </body>
 </html>
