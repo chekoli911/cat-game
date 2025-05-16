@@ -59,6 +59,7 @@
   </div>
   <button id="restartButton">Сыграть ещё</button>
   <audio id="crunchSound" src="crunch.mp3"></audio>
+  <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
 
   <script>
     const canvas = document.getElementById('game');
@@ -67,6 +68,7 @@
     canvas.height = window.innerHeight;
 
     const crunchSound = document.getElementById('crunchSound');
+const hitSound = document.getElementById('hitSound');
 
     const catZloi = new Image();
     catZloi.src = 'cat_zloi.png';
@@ -145,6 +147,7 @@ let mouseAppearTime = 0;
       const now = Date.now();
       if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
+        hitSound.play();
         lives--;
         if (lives <= 0) {
         gameRunning = false;
@@ -389,6 +392,7 @@ if (score >= 110) {
       const now = Date.now();
       if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
+        hitSound.play();
         lives--;
         if (lives <= 0) {
         gameRunning = false;
