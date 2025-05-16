@@ -256,7 +256,7 @@ if (score >= 110) {
     
       // Мышка появляется раз в 20 секунд
       const now = Date.now();
-      if (!mouseVisible && now - mouseCooldown > 180000) {
+      if (currentLevel > 1 && !mouseVisible && now - mouseCooldown > 180000) {
         mouseX = Math.random() * (canvas.width - 50);
         mouseY = Math.random() * (canvas.height - 50);
         mouseVisible = true;
