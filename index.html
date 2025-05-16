@@ -60,6 +60,7 @@
   <button id="restartButton">Сыграть ещё</button>
   <audio id="crunchSound" src="crunch.mp3"></audio>
   <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
+  <audio id="mouseSound" src="intro-sound-2-269294.mp3"></audio>
 
   <script>
     const canvas = document.getElementById('game');
@@ -69,6 +70,7 @@
 
     const crunchSound = document.getElementById('crunchSound');
 const hitSound = document.getElementById('hitSound');
+const mouseSound = document.getElementById('mouseSound');
 
     const catZloi = new Image();
     catZloi.src = 'cat_zloi.png';
@@ -310,6 +312,7 @@ if (score >= 110) {
       let dxMouse = catX - mouseX;
       let dyMouse = catY - mouseY;
       if (mouseVisible && Math.hypot(dxMouse, dyMouse) < 60) {
+        mouseSound.play();
         if (lives < 3) lives++;
         mouseVisible = false;
         mouseCooldown = now;
