@@ -136,6 +136,7 @@ let mouseAppearTime = 0;
     let timerInterval;
 
     function resetGame() {
+      showHighscores();
       catX = 100;
       catY = 100;
       score = 0;
@@ -507,7 +508,7 @@ window.addEventListener('keyup', (e) => {
     <label>Введите имя: <input id="playerName" type="text" /></label>
     <button onclick="saveHighscore()">Сохранить</button>
   </div>
-  <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); color:white; padding:10px; font-size:14px;">
+  <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.2); color:white; padding:10px; font-size:14px;">
     <div><b>Топ рекордов:</b></div>
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
