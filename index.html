@@ -266,10 +266,18 @@ if (score >= 110) {
       // Случайное блуждание мышки
       if (mouseVisible) {
         
-      // Каждые 3 секунды мышка меняет направление
-      
-      if (now - mouseChangeDirCooldown > 3000) {
-        // Только диагональные направления
+      // Первое направление — к центру экрана
+      if (mouseVisible && mouseAppearTime === now) {
+        const toCenterX = canvas.width / 2 - mouseX;
+        const toCenterY = canvas.height / 2 - mouseY;
+        const dist = Math.hypot(toCenterX, toCenterY);
+        mouseDirX = toCenterX / dist;
+        mouseDirY = toCenterY / dist;
+        mouseChangeDirCooldown = now + 1000;
+      }
+
+      // Меняем направление через случайные диагонали
+      if (now - mouseChangeDirCooldown > 1000) {
         const diagonalAngles = [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4];
         const angle = diagonalAngles[Math.floor(Math.random() * diagonalAngles.length)];
         mouseDirX = Math.cos(angle);
@@ -277,11 +285,11 @@ if (score >= 110) {
         mouseChangeDirCooldown = now;
       }
 
-      // Движение мышки
       mouseX += mouseDirX * 1.5;
       mouseY += mouseDirY * 1.5;
 
-      // Удерживаем мышку подальше от краёв
+      mouseX = Math.max(30, Math.min(canvas.width - 80, mouseX));
+      mouseY = Math.max(30, Math.min(canvas.height - 80, mouseY));
       mouseX = Math.max(30, Math.min(canvas.width - 80, mouseX));
       mouseY = Math.max(30, Math.min(canvas.height - 80, mouseY));
 
