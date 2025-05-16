@@ -345,8 +345,14 @@ if (score >= 110) {
         lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
-        if (score === 1 && musicEnabled) {
-          bgMusic.play().catch(() => {});
+        if (score === 1) {
+          if (musicEnabled) {
+            bgMusic.play().then(() => {
+              musicToggle.textContent = "🔊 Музыка";
+            }).catch(() => {
+              musicToggle.textContent = "🚫 Отклонено";
+            });
+          }
         }
       }
     }
