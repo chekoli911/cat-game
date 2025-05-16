@@ -154,6 +154,7 @@ let mouseAppearTime = 0;
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+          document.getElementById('nameEntry').style.display = 'block';
         return;
       }
       }
@@ -169,6 +170,7 @@ let mouseAppearTime = 0;
           clearInterval(timerInterval);
           gameRunning = false;
           restartButton.style.display = 'block';
+          document.getElementById('nameEntry').style.display = 'block';
         }
       }, 1000);
     }
@@ -400,6 +402,7 @@ if (score >= 110) {
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+          document.getElementById('nameEntry').style.display = 'block';
         return;
       }
       }
@@ -473,7 +476,41 @@ window.addEventListener('keyup', (e) => {
       velocity.x = 0; break;
   }
 });
+
+    function showHighscores() {
+      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
+      const list = document.getElementById("highscoreList");
+      list.innerHTML = "";
+      scores.slice(0, 5).forEach(s => {
+        const item = document.createElement("li");
+        item.textContent = `${s.name}: ${s.score}`;
+        list.appendChild(item);
+      });
+    }
+
+    function saveHighscore() {
+      const name = document.getElementById("playerName").value || "Безымянный";
+      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
+      scores.push({ name, score });
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem("catHighscores", JSON.stringify(scores.slice(0, 5)));
+      document.getElementById("nameEntry").style.display = "none";
+      showHighscores();
+    }
+
+    showHighscores();
+
 </script>
+
+
+  <div id="nameEntry" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:8px; z-index:20;">
+    <label>Введите имя: <input id="playerName" type="text" /></label>
+    <button onclick="saveHighscore()">Сохранить</button>
+  </div>
+  <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); color:white; padding:10px; font-size:14px;">
+    <div><b>Топ рекордов:</b></div>
+    <ul id="highscoreList" style="padding-left: 18px;"></ul>
+  </div>
 
 </body>
 </html>
