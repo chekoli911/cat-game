@@ -267,8 +267,11 @@ if (score >= 110) {
       if (mouseVisible) {
         
       // Каждые 3 секунды мышка меняет направление
+      
       if (now - mouseChangeDirCooldown > 3000) {
-        const angle = Math.random() * Math.PI * 2;
+        // Только диагональные направления
+        const diagonalAngles = [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4];
+        const angle = diagonalAngles[Math.floor(Math.random() * diagonalAngles.length)];
         mouseDirX = Math.cos(angle);
         mouseDirY = Math.sin(angle);
         mouseChangeDirCooldown = now;
@@ -278,9 +281,10 @@ if (score >= 110) {
       mouseX += mouseDirX * 1.5;
       mouseY += mouseDirY * 1.5;
 
-      // Ограничение в пределах карты
-      mouseX = Math.max(0, Math.min(canvas.width - 50, mouseX));
-      mouseY = Math.max(0, Math.min(canvas.height - 50, mouseY));
+      // Удерживаем мышку подальше от краёв
+      mouseX = Math.max(30, Math.min(canvas.width - 80, mouseX));
+      mouseY = Math.max(30, Math.min(canvas.height - 80, mouseY));
+
 
       }
 
