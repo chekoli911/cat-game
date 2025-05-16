@@ -61,6 +61,7 @@
   <audio id="crunchSound" src="crunch.mp3"></audio>
   <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
   <audio id="mouseSound" src="intro-sound-2-269294.mp3"></audio>
+  <audio id="bgMusic" src="terra-short-background-music-336035.mp3" loop autoplay></audio>
 
   <script>
     const canvas = document.getElementById('game');
@@ -71,6 +72,9 @@
     const crunchSound = document.getElementById('crunchSound');
 const hitSound = document.getElementById('hitSound');
 const mouseSound = document.getElementById('mouseSound');
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.4;
+bgMusic.play().catch(() => {});
 
     const catZloi = new Image();
     catZloi.src = 'cat_zloi.png';
