@@ -118,6 +118,7 @@ let mouseDirY = 0;
 let mouseChangeDirCooldown = 0;
 
 let mouseCooldown = 0;
+let mouseAppearTime = 0;
 
     let velocity = { x: 0, y: 0 };
     let foodX, foodY;
@@ -255,10 +256,11 @@ if (score >= 110) {
     
       // Мышка появляется раз в 20 секунд
       const now = Date.now();
-      if (!mouseVisible && now - mouseCooldown > 20000) {
+      if (!mouseVisible && now - mouseCooldown > 180000) {
         mouseX = Math.random() * (canvas.width - 50);
         mouseY = Math.random() * (canvas.height - 50);
         mouseVisible = true;
+        mouseAppearTime = now;
       }
 
       // Случайное блуждание мышки
@@ -280,6 +282,13 @@ if (score >= 110) {
       mouseX = Math.max(0, Math.min(canvas.width - 50, mouseX));
       mouseY = Math.max(0, Math.min(canvas.height - 50, mouseY));
 
+      }
+
+      
+      // Автоматическое исчезновение мышки через 5 секунд
+      if (mouseVisible && now - mouseAppearTime > 5000) {
+        mouseVisible = false;
+        mouseCooldown = now;
       }
 
       // Съедание мышки
