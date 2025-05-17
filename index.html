@@ -524,14 +524,28 @@ window.addEventListener('keyup', (e) => {
       const threshold = 0.2;
       const speed = 5;
 
-      // Сброс скорости
-      velocity.x = 0;
-      velocity.y = 0;
+      let vx = 0, vy = 0;
 
-      // Стики
       if (Math.abs(gp.axes[0]) > threshold) {
-        velocity.x = gp.axes[0] * speed;
+        vx = gp.axes[0] * speed;
       }
+      if (Math.abs(gp.axes[1]) > threshold) {
+        vy = gp.axes[1] * speed;
+      }
+
+      if (vx !== 0 || vy !== 0) {
+        velocity.x = vx;
+        velocity.y = vy;
+      }
+
+      // Кнопка X на DualSense (1) или A на Xbox (0)
+      if (gp.buttons[0].pressed || gp.buttons[1].pressed) {
+        const restartBtn = document.getElementById("restartButton");
+        if (restartBtn && restartBtn.style.display === "block") {
+          restartBtn.click();
+        }
+      }
+    }
       if (Math.abs(gp.axes[1]) > threshold) {
         velocity.y = gp.axes[1] * speed;
       }
