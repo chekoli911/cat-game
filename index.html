@@ -544,6 +544,20 @@ function pollGamepad() {
   }
 }
 
+
+// Попытка автоопределения геймпада при запуске
+window.addEventListener("load", () => {
+  const gamepads = navigator.getGamepads();
+  for (let i = 0; i < gamepads.length; i++) {
+    if (gamepads[i]) {
+      gamepadIndex = i;
+      console.log("Геймпад найден при запуске:", gamepads[i]);
+      break;
+    }
+  }
+});
+
+
 setInterval(pollGamepad, 100);
 
 </script>
