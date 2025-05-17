@@ -168,7 +168,38 @@ let mouseAppearTime = 0;
 
     function startTimer() {
       clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
+      timerInterval = 
+    function pollGamepad() {
+      const gp = navigator.getGamepads()[gamepadIndex];
+      if (!gp) {
+        console.warn("Gamepad not found or disconnected");
+        return;
+      }
+
+      const threshold = 0.2;
+      const speed = 5;
+      let vx = 0, vy = 0;
+
+      if (Math.abs(gp.axes[0]) > threshold) {
+        vx = gp.axes[0] * speed;
+      }
+      if (Math.abs(gp.axes[1]) > threshold) {
+        vy = gp.axes[1] * speed;
+      }
+
+      velocity.x = vx;
+      velocity.y = vy;
+
+      // Кнопка X или A
+      if (gp.buttons[0].pressed || gp.buttons[1].pressed) {
+        const restartBtn = document.getElementById("restartButton");
+        if (restartBtn && restartBtn.style.display === "block") {
+          restartBtn.click();
+        }
+      }
+    }
+
+    setInterval(() => {
         if (timeLeft > 0) {
           timeLeft--;
         } else {
@@ -517,12 +548,7 @@ window.addEventListener('keyup', (e) => {
       gamepadIndex = null;
     });
 
-    function pollGamepad() {
-      const gp = navigator.getGamepads()[gamepadIndex];
-      if (!gp) {
-        console.warn('Gamepad not found or disconnected');
-        return;
-      }
+    
 
       const threshold = 0.2;
       const speed = 5;
@@ -567,6 +593,37 @@ window.addEventListener('keyup', (e) => {
 
     // Автоопределение геймпада при старте
     
+    
+    function pollGamepad() {
+      const gp = navigator.getGamepads()[gamepadIndex];
+      if (!gp) {
+        console.warn("Gamepad not found or disconnected");
+        return;
+      }
+
+      const threshold = 0.2;
+      const speed = 5;
+      let vx = 0, vy = 0;
+
+      if (Math.abs(gp.axes[0]) > threshold) {
+        vx = gp.axes[0] * speed;
+      }
+      if (Math.abs(gp.axes[1]) > threshold) {
+        vy = gp.axes[1] * speed;
+      }
+
+      velocity.x = vx;
+      velocity.y = vy;
+
+      // Кнопка X или A
+      if (gp.buttons[0].pressed || gp.buttons[1].pressed) {
+        const restartBtn = document.getElementById("restartButton");
+        if (restartBtn && restartBtn.style.display === "block") {
+          restartBtn.click();
+        }
+      }
+    }
+
     setInterval(() => {
       if (gamepadIndex === null) {
         const gamepads = navigator.getGamepads();
