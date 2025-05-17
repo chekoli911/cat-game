@@ -251,6 +251,7 @@ if (score >= 110) {
 
     function update() {
   if (paused) return;
+  if (paused) return;
       if (currentLevel > 1) {
       // Злой кот двигается к игроку
       const dzX = catX - zloiX;
@@ -353,6 +354,7 @@ if (score >= 110) {
     }
 
     function gameLoop() {
+  if (paused) return;
   if (paused) return;
       if (!gameRunning) return;
       update();
@@ -460,9 +462,7 @@ if (score >= 110) {
 
     
 
-    cat.onload = bg.onload = food.onload = () => {
-      resetGame();
-    };
+    
   
 window.addEventListener('keydown', (e) => {
   const speed = 5;
@@ -507,10 +507,30 @@ window.addEventListener('keyup', (e) => {
     showHighscores();
 
 
-let paused = false;
+
 
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space') {
+    e.preventDefault();
+    paused = !paused;
+    const overlay = document.getElementById("pauseOverlay");
+    if (paused) {
+      clearInterval(timerInterval);
+      overlay.style.display = "block";
+    } else {
+      startTimer();
+      overlay.style.display = "none";
+      requestAnimationFrame(gameLoop);
+    }
+  }
+});
+
+window.addEventListener("load", () => { resetGame(); });
+
+let paused = false;
+window.addEventListener("keydown", (e) => {
+  const code = e.code || e.key;
+  if (code === "Space" || e.key === " ") {
     e.preventDefault();
     paused = !paused;
     const overlay = document.getElementById("pauseOverlay");
