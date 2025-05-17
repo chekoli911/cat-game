@@ -556,11 +556,6 @@ window.addEventListener("load", () => {
     }
   }
 });
-window.addEventListener("keydown", startGamepadPolling);
-window.addEventListener("mousedown", startGamepadPolling);
-window.addEventListener("touchstart", startGamepadPolling);
-
-
 let gamepadStarted = false;
 
 function startGamepadPolling() {
@@ -577,6 +572,8 @@ function startGamepadPolling() {
     }
     pollGamepad();
   }, 100);
+}
+
 window.addEventListener("keydown", startGamepadPolling);
 window.addEventListener("mousedown", startGamepadPolling);
 window.addEventListener("touchstart", startGamepadPolling);
