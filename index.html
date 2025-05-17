@@ -187,6 +187,7 @@ let mouseAppearTime = 0;
         vy = gp.axes[1] * speed;
       }
 
+      updateInputMode('gamepad');
       velocity.x = vx;
       velocity.y = vy;
 
@@ -494,6 +495,7 @@ if (score >= 110) {
     };
   
 window.addEventListener('keydown', (e) => {
+  updateInputMode('keyboard');
   const speed = 5;
   switch (e.code) {
     case 'KeyW': case 'ArrowUp': velocity.y = -speed; break;
@@ -562,6 +564,7 @@ window.addEventListener('keyup', (e) => {
         vy = gp.axes[1] * speed;
       }
 
+      updateInputMode('gamepad');
       velocity.x = vx;
       velocity.y = vy;
 
@@ -579,6 +582,17 @@ window.addEventListener('keyup', (e) => {
     
     
     const gamepadStatus = document.getElementById("gamepadStatus");
+
+    let inputMode = 'keyboard';
+    const inputIndicator = document.getElementById("inputIndicator");
+
+    function updateInputMode(mode) {
+      if (inputMode !== mode) {
+        inputMode = mode;
+        inputIndicator.textContent = mode === 'gamepad' ? '🎮 Геймпад' : '💻 Клавиатура';
+      }
+    }
+
 
     window.addEventListener("gamepadconnected", (e) => {
       gamepadIndex = e.gamepad.index;
@@ -612,6 +626,7 @@ window.addEventListener('keyup', (e) => {
         vy = gp.axes[1] * speed;
       }
 
+      updateInputMode('gamepad');
       velocity.x = vx;
       velocity.y = vy;
 
@@ -654,6 +669,11 @@ window.addEventListener('keyup', (e) => {
 
   <div id="gamepadStatus" style="position: absolute; top: 10px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.2); color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px; display: none;">
     🎮 Геймпад подключён
+  </div>
+
+
+  <div id="inputIndicator" style="position: absolute; top: 40px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.2); color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px;">
+    💻 Клавиатура
   </div>
 
 </body>
