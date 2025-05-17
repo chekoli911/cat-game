@@ -355,7 +355,7 @@ if (score >= 110) {
     }
 
     function gameLoop() {
-      if (!gameRunning) return;
+      if (!gameRunning || paused) return;
       update();
       if (score >= 110 && currentLevel < 12) {
         currentLevel = 12;
