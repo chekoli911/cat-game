@@ -549,11 +549,30 @@ function startGamepadPolling() {
     }
     pollGamepad();
   }, 100);
+
+let gamepadStarted = false;
+
+function startGamepadPolling() {
+  if (gamepadStarted) return;
+  gamepadStarted = true;
+
+  setInterval(() => {
+    const gamepads = navigator.getGamepads();
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        gamepadIndex = i;
+        break;
+      }
+    }
+    pollGamepad();
+  }, 100);
 }
 
-window.addEventListener("keydown", startGamepadPolling);
-window.addEventListener("mousedown", startGamepadPolling);
-window.addEventListener("touchstart", startGamepadPolling);
+['keydown', 'mousedown', 'touchstart'].forEach(evt => {
+  window.addEventListener(evt, (e) => {
+    startGamepadPolling();
+  });
+});
 
 </script>
 
