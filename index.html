@@ -505,17 +505,8 @@ window.addEventListener('keyup', (e) => {
     showHighscores();
 
 
-// === GAMEPAD SUPPORT ===
 let gamepadIndex = null;
-
-window.addEventListener("gamepadconnected", (e) => {
-  gamepadIndex = e.gamepad.index;
-  console.log("Gamepad connected:", e.gamepad);
-});
-
-window.addEventListener("gamepaddisconnected", () => {
-  gamepadIndex = null;
-});
+let gamepadStarted = false;
 
 function pollGamepad() {
   if (gamepadIndex === null) return;
@@ -543,20 +534,6 @@ function pollGamepad() {
     }
   }
 }
-
-
-// Попытка автоопределения геймпада при запуске
-window.addEventListener("load", () => {
-  const gamepads = navigator.getGamepads();
-  for (let i = 0; i < gamepads.length; i++) {
-    if (gamepads[i]) {
-      gamepadIndex = i;
-      console.log("Геймпад найден при запуске:", gamepads[i]);
-      break;
-    }
-  }
-});
-let gamepadStarted = false;
 
 function startGamepadPolling() {
   if (gamepadStarted) return;
