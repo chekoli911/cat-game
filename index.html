@@ -504,6 +504,84 @@ window.addEventListener('keyup', (e) => {
 
     showHighscores();
 
+
+    // === GAMEPAD SUPPORT ===
+    let gamepadIndex = null;
+
+    window.addEventListener("gamepadconnected", (e) => {
+      gamepadIndex = e.gamepad.index;
+      console.log("Gamepad connected:", e.gamepad);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+      gamepadIndex = null;
+    });
+
+    function pollGamepad() {
+      const gp = navigator.getGamepads()[gamepadIndex];
+      if (!gp) {
+        console.warn('Gamepad not found or disconnected');
+        return;
+      }
+
+      const threshold = 0.2;
+      const speed = 5;
+
+      let vx = 0, vy = 0;
+
+      if (Math.abs(gp.axes[0]) > threshold) {
+        vx = gp.axes[0] * speed;
+      }
+      if (Math.abs(gp.axes[1]) > threshold) {
+        vy = gp.axes[1] * speed;
+      }
+
+      velocity.x = vx;
+      velocity.y = vy;
+
+      // Кнопка X на DualSense (1) или A на Xbox (0)
+      if (gp.buttons[0].pressed || gp.buttons[1].pressed) {
+        const restartBtn = document.getElementById("restartButton");
+        if (restartBtn && restartBtn.style.display === "block") {
+          restartBtn.click();
+        }
+      }
+    }
+      }
+    }
+
+    
+    
+    const gamepadStatus = document.getElementById("gamepadStatus");
+
+    window.addEventListener("gamepadconnected", (e) => {
+      gamepadIndex = e.gamepad.index;
+      gamepadStatus.style.display = "block";
+      console.log("Gamepad connected:", e.gamepad);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+      gamepadIndex = null;
+      gamepadStatus.style.display = "none";
+    });
+
+    // Автоопределение геймпада при старте
+    
+    setInterval(() => {
+      if (gamepadIndex === null) {
+        const gamepads = navigator.getGamepads();
+        for (let i = 0; i < gamepads.length; i++) {
+          if (gamepads[i]) {
+            gamepadIndex = i;
+            console.log("Gamepad auto-detected:", gamepads[i]);
+            break;
+          }
+        }
+      }
+      pollGamepad();
+    }, 100);
+ // обновлять каждые 100мс
+
 </script>
 
 
@@ -514,6 +592,11 @@ window.addEventListener('keyup', (e) => {
   <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.2); color:white; padding:10px; font-size:14px;">
     <div><b>Топ рекордов:</b></div>
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
+  </div>
+
+
+  <div id="gamepadStatus" style="position: absolute; top: 10px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.2); color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px; display: none;">
+    🎮 Геймпад подключён
   </div>
 
 </body>
