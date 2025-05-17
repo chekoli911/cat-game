@@ -250,8 +250,6 @@ if (score >= 110) {
     }
 
     function update() {
-  if (paused) return;
-  if (paused) return;
       if (currentLevel > 1) {
       // Злой кот двигается к игроку
       const dzX = catX - zloiX;
@@ -354,8 +352,6 @@ if (score >= 110) {
     }
 
     function gameLoop() {
-  if (paused) return;
-  if (paused) return;
       if (!gameRunning) return;
       update();
       if (score >= 110 && currentLevel < 12) {
@@ -462,7 +458,9 @@ if (score >= 110) {
 
     
 
-    
+    cat.onload = bg.onload = food.onload = () => {
+      resetGame();
+    };
   
 window.addEventListener('keydown', (e) => {
   const speed = 5;
@@ -506,57 +504,6 @@ window.addEventListener('keyup', (e) => {
 
     showHighscores();
 
-
-
-
-window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') {
-    e.preventDefault();
-    paused = !paused;
-    const overlay = document.getElementById("pauseOverlay");
-    if (paused) {
-      clearInterval(timerInterval);
-      overlay.style.display = "block";
-    } else {
-      startTimer();
-      overlay.style.display = "none";
-      requestAnimationFrame(gameLoop);
-    }
-  }
-});
-
-
-
-let paused = false;
-window.addEventListener("keydown", (e) => {
-  const code = e.code || e.key;
-  if (code === "Space" || e.key === " ") {
-    e.preventDefault();
-    paused = !paused;
-    const overlay = document.getElementById("pauseOverlay");
-    if (paused) {
-      clearInterval(timerInterval);
-      overlay.style.display = "block";
-    } else {
-      startTimer();
-      overlay.style.display = "none";
-      requestAnimationFrame(gameLoop);
-    }
-  }
-});
-
-
-let imagesLoaded = 0;
-function imageReady() {
-  imagesLoaded++;
-  if (imagesLoaded >= 3) {
-    resetGame();
-  }
-}
-cat.onload = imageReady;
-bg.onload = imageReady;
-food.onload = imageReady;
-
 </script>
 
 
@@ -569,9 +516,5 @@ food.onload = imageReady;
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
 
-
-<div id="pauseOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.4); color:white; font-size:48px; text-align:center; line-height:100vh; z-index:20;">
-  ПАУЗА
-</div>
 </body>
 </html>
