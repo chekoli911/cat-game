@@ -558,7 +558,31 @@ window.addEventListener("load", () => {
 });
 
 
-setInterval(pollGamepad, 100);
+
+
+
+let gamepadStarted = false;
+
+function startGamepadPolling() {
+  if (gamepadStarted) return;
+  gamepadStarted = true;
+
+  // автоопределение геймпада
+  const gamepads = navigator.getGamepads();
+  for (let i = 0; i < gamepads.length; i++) {
+    if (gamepads[i]) {
+      gamepadIndex = i;
+      console.log("Геймпад найден после действия:", gamepads[i]);
+      break;
+    }
+  }
+
+  setInterval(pollGamepad, 100);
+}
+
+window.addEventListener("keydown", startGamepadPolling);
+window.addEventListener("mousedown", startGamepadPolling);
+window.addEventListener("touchstart", startGamepadPolling);
 
 </script>
 
