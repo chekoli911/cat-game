@@ -545,7 +545,21 @@ window.addEventListener('keyup', (e) => {
       }
     }
 
-    setInterval(pollGamepad, 100); // обновлять каждые 100мс
+    
+    setInterval(() => {
+      if (gamepadIndex === null) {
+        const gamepads = navigator.getGamepads();
+        for (let i = 0; i < gamepads.length; i++) {
+          if (gamepads[i]) {
+            gamepadIndex = i;
+            console.log("Gamepad auto-detected:", gamepads[i]);
+            break;
+          }
+        }
+      }
+      pollGamepad();
+    }, 100);
+ // обновлять каждые 100мс
 
 </script>
 
