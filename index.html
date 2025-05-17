@@ -525,7 +525,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-window.addEventListener("load", () => { resetGame(); });
+
 
 let paused = false;
 window.addEventListener("keydown", (e) => {
@@ -544,6 +544,18 @@ window.addEventListener("keydown", (e) => {
     }
   }
 });
+
+
+let imagesLoaded = 0;
+function imageReady() {
+  imagesLoaded++;
+  if (imagesLoaded >= 3) {
+    resetGame();
+  }
+}
+cat.onload = imageReady;
+bg.onload = imageReady;
+food.onload = imageReady;
 
 </script>
 
