@@ -53,8 +53,94 @@
   </style>
 
 <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
 
 
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(item);
+      });
+    });
+}
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
+
+
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(item);
+      });
+    });
+}
+
+</script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
@@ -599,7 +685,7 @@ function loadHighscores() {
   </div>
   <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.2); color:white; padding:10px; font-size:14px;">
     <div><b>Топ рекордов:</b></div>
-    <ul id="highscoreList" style="padding-left: 18px; max-height: 110px; overflow: hidden;" style="padding-left: 18px;"></ul>
+    <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
 
 </body>
