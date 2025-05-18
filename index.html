@@ -88,7 +88,7 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 15).forEach(entry => {
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
         item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
@@ -132,7 +132,7 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 15).forEach(entry => {
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
         item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
@@ -189,7 +189,7 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 15).forEach(entry => {
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
         item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
@@ -629,22 +629,7 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    
-    
-    loadHighscores();
 
-
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
 
 
 
@@ -668,7 +653,7 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 15).forEach(entry => {
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
         item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
