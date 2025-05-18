@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
+    authDomain: "catgameonline-a5db1.firebaseapp.com",
+    databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
+    projectId: "catgameonline-a5db1",
+    storageBucket: "catgameonline-a5db1.firebasestorage.app",
+    messagingSenderId: "243768138039",
+    appId: "1:243768138039:web:07acd819a130233b1c62b2",
+    measurementId: "G-Y5EYTNQETP"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Game</title>
@@ -51,154 +69,6 @@
       z-index: 10;
     }
   </style>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
-
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем старый список
-
-  db.ref("highscores")
-    .once("value")
-    .then(snapshot => {
-      const uniqueSet = new Set();
-      const scores = [];
-
-      snapshot.forEach(child => {
-        const entry = child.val();
-        const key = `${entry.name}-${entry.score}`;
-        if (!uniqueSet.has(key)) {
-          uniqueSet.add(key);
-          scores.push(entry);
-        }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
-
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем старый список
-
-  db.ref("highscores")
-    .once("value")
-    .then(snapshot => {
-      const uniqueSet = new Set();
-      const scores = [];
-
-      snapshot.forEach(child => {
-        const entry = child.val();
-        const key = `${entry.name}-${entry.score}`;
-        if (!uniqueSet.has(key)) {
-          uniqueSet.add(key);
-          scores.push(entry);
-        }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
-  authDomain: "catgameonline-a5db1.firebaseapp.com",
-  databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
-  projectId: "catgameonline-a5db1",
-  storageBucket: "catgameonline-a5db1.firebasestorage.app",
-  messagingSenderId: "243768138039",
-  appId: "1:243768138039:web:07acd819a130233b1c62b2",
-  measurementId: "G-Y5EYTNQETP"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
-
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем старый список
-
-  db.ref("highscores")
-    .once("value")
-    .then(snapshot => {
-      const uniqueSet = new Set();
-      const scores = [];
-
-      snapshot.forEach(child => {
-        const entry = child.val();
-        const key = `${entry.name}-${entry.score}`;
-        if (!uniqueSet.has(key)) {
-          uniqueSet.add(key);
-          scores.push(entry);
-        }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
-
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -288,7 +158,7 @@ let mouseAppearTime = 0;
     let timerInterval;
 
     function resetGame() {
-      loadHighscores();
+      showHighscores();
       catX = 100;
       catY = 100;
       score = 0;
@@ -629,52 +499,37 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    
-    
-    loadHighscores();
-
-
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
-
-
-
-function loadHighscores() {
+   function showHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем старый список
+  list.innerHTML = "";
 
-  db.ref("highscores")
-    .once("value")
-    .then(snapshot => {
-      const uniqueSet = new Set();
+  db.ref("scores")
+    .orderByChild("score")
+    .limitToLast(5)
+    .once("value", snapshot => {
       const scores = [];
+      snapshot.forEach(child => scores.push(child.val()));
+      scores.reverse(); // от большего к меньшему
 
-      snapshot.forEach(child => {
-        const entry = child.val();
-        const key = `${entry.name}-${entry.score}`;
-        if (!uniqueSet.has(key)) {
-          uniqueSet.add(key);
-          scores.push(entry);
-        }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
+      scores.forEach(s => {
         const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
+        item.textContent = `${s.name}: ${s.score}`;
         list.appendChild(item);
       });
     });
 }
+
+
+   function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newEntry = { name, score };
+  db.ref("scores").push(newEntry);
+  document.getElementById("nameEntry").style.display = "none";
+  showHighscores();
+}
+
+
+    showHighscores();
 
 </script>
 
