@@ -68,6 +68,10 @@ function saveHighscore() {
 
 
 
+);
+}
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
   list.innerHTML = ""; // очищаем старый список
@@ -88,9 +92,13 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
+      scores.slice(0, 7).forEach((entry, index) => {
         const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
+        let medal = "";
+        if (index === 0) medal = "🥇 ";
+        else if (index === 1) medal = "🥈 ";
+        else if (index === 2) medal = "🥉 ";
+        item.textContent = medal + entry.name + ": " + entry.score;
         list.appendChild(item);
       });
     });
@@ -112,6 +120,10 @@ function saveHighscore() {
 
 
 
+);
+}
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
   list.innerHTML = ""; // очищаем старый список
@@ -132,9 +144,13 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
+      scores.slice(0, 7).forEach((entry, index) => {
         const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
+        let medal = "";
+        if (index === 0) medal = "🥇 ";
+        else if (index === 1) medal = "🥈 ";
+        else if (index === 2) medal = "🥉 ";
+        item.textContent = medal + entry.name + ": " + entry.score;
         list.appendChild(item);
       });
     });
@@ -169,6 +185,10 @@ function saveHighscore() {
 
 
 
+);
+}
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
   list.innerHTML = ""; // очищаем старый список
@@ -189,9 +209,13 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
+      scores.slice(0, 7).forEach((entry, index) => {
         const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
+        let medal = "";
+        if (index === 0) medal = "🥇 ";
+        else if (index === 1) medal = "🥈 ";
+        else if (index === 2) medal = "🥉 ";
+        item.textContent = medal + entry.name + ": " + entry.score;
         list.appendChild(item);
       });
     });
@@ -648,6 +672,10 @@ function saveHighscore() {
 
 
 
+);
+}
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
   list.innerHTML = ""; // очищаем старый список
@@ -668,9 +696,13 @@ function loadHighscores() {
       });
 
       scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
+      scores.slice(0, 7).forEach((entry, index) => {
         const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
+        let medal = "";
+        if (index === 0) medal = "🥇 ";
+        else if (index === 1) medal = "🥈 ";
+        else if (index === 2) medal = "🥉 ";
+        item.textContent = medal + entry.name + ": " + entry.score;
         list.appendChild(item);
       });
     });
