@@ -53,50 +53,7 @@
   </style>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  const newRef = db.ref("highscores").push();
-  newRef.set({
-    name: name,
-    score: score,
-    time: Date.now()
-  });
-  document.getElementById("nameEntry").style.display = "none";
-  loadHighscores();
-}
 
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем старый список
-
-  db.ref("highscores")
-    .once("value")
-    .then(snapshot => {
-      const uniqueSet = new Set();
-      const scores = [];
-
-      snapshot.forEach(child => {
-        const entry = child.val();
-        const key = `${entry.name}-${entry.score}`;
-        if (!uniqueSet.has(key)) {
-          uniqueSet.add(key);
-          scores.push(entry);
-        }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
 function saveHighscore() {
   const name = document.getElementById("playerName").value || "Безымянный";
