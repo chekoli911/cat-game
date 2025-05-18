@@ -693,7 +693,7 @@ function loadHighscores() {
 setTimeout(() => {
   const list = document.getElementById("highscoreList");
   if (list && list.children.length > 5) {
-    while (list.children.length > 8) {
+    while (list.children.length > 5) {
       list.removeChild(list.lastChild);
     }
   }
@@ -709,7 +709,7 @@ setTimeout(() => {
     const wrapper = document.getElementById("highscores");
     if (list && wrapper && list.children.length > 0) {
       // Удаляем лишнее
-      while (list.children.length > 8) {
+      while (list.children.length > 5) {
         list.removeChild(list.lastChild);
       }
       // Показываем блок, если всё готово
