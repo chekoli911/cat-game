@@ -85,16 +85,7 @@ function loadHighscores() {
           uniqueSet.add(key);
           scores.push(entry);
         }
-      });
-
-      scores.sort((a, b) => b.score - a.score);
-      scores.slice(0, 5).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
+  
 
 </script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
