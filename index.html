@@ -51,6 +51,154 @@
       z-index: 10;
     }
   </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
+
+
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(item);
+      });
+    });
+}
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
+
+
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(item);
+      });
+    });
+}
+
+</script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
+  authDomain: "catgameonline-a5db1.firebaseapp.com",
+  databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
+  projectId: "catgameonline-a5db1",
+  storageBucket: "catgameonline-a5db1.firebasestorage.app",
+  messagingSenderId: "243768138039",
+  appId: "1:243768138039:web:07acd819a130233b1c62b2",
+  measurementId: "G-Y5EYTNQETP"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
+
+
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
+        const item = document.createElement("li");
+        item.textContent = `${entry.name}: ${entry.score}`;
+        list.appendChild(item);
+      });
+    });
+}
+
+</script>
+
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -140,7 +288,7 @@ let mouseAppearTime = 0;
     let timerInterval;
 
     function resetGame() {
-      showHighscores();
+      loadHighscores();
       catX = 100;
       catY = 100;
       score = 0;
@@ -481,28 +629,52 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    function showHighscores() {
-      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
-      const list = document.getElementById("highscoreList");
-      list.innerHTML = "";
-      scores.slice(0, 5).forEach(s => {
+    
+    
+    loadHighscores();
+
+
+function saveHighscore() {
+  const name = document.getElementById("playerName").value || "Безымянный";
+  const newRef = db.ref("highscores").push();
+  newRef.set({
+    name: name,
+    score: score,
+    time: Date.now()
+  });
+  document.getElementById("nameEntry").style.display = "none";
+  loadHighscores();
+}
+
+
+
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
+      });
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
+        item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
       });
-    }
-
-    function saveHighscore() {
-      const name = document.getElementById("playerName").value || "Безымянный";
-      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
-      scores.push({ name, score });
-      scores.sort((a, b) => b.score - a.score);
-      localStorage.setItem("catHighscores", JSON.stringify(scores.slice(0, 5)));
-      document.getElementById("nameEntry").style.display = "none";
-      showHighscores();
-    }
-
-    showHighscores();
+    });
+}
 
 </script>
 
