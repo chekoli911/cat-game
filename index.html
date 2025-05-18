@@ -51,8 +51,6 @@
       z-index: 10;
     }
   </style>
-
-
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -483,26 +481,28 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    
-    
+    function showHighscores() {
+      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
+      const list = document.getElementById("highscoreList");
+      list.innerHTML = "";
+      scores.slice(0, 5).forEach(s => {
+        const item = document.createElement("li");
+        item.textContent = `${s.name}: ${s.score}`;
+        list.appendChild(item);
+      });
+    }
+
+    function saveHighscore() {
+      const name = document.getElementById("playerName").value || "Безымянный";
+      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
+      scores.push({ name, score });
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem("catHighscores", JSON.stringify(scores.slice(0, 5)));
+      document.getElementById("nameEntry").style.display = "none";
+      showHighscores();
+    }
+
     showHighscores();
-
-
-// Инициализация Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
-  authDomain: "catgameonline-a5db1.firebaseapp.com",
-  databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
-  projectId: "catgameonline-a5db1",
-  storageBucket: "catgameonline-a5db1.appspot.com",
-  messagingSenderId: "243768138039",
-  appId: "1:243768138039:web:07acd819a130233b1c62b2",
-  measurementId: "G-Y5EYTNQETP"
-};
-
-const db = firebase.database();
-
-
 
 </script>
 
@@ -532,32 +532,7 @@ const db = firebase.database();
     measurementId: "G-Y5EYTNQETP"
   };
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  function saveHighscore() {
-    const name = document.getElementById("playerName").value || "Безымянный";
-    db.ref("highscores").push({ name, score, timestamp: Date.now() }).then(() => {
-      document.getElementById("nameEntry").style.display = "none";
-      showHighscores();
-    });
-  }
-
-  function showHighscores() {
-    const list = document.getElementById("highscoreList");
-    list.innerHTML = "";
-    db.ref("highscores")
-      .orderByChild("score")
-      .limitToLast(15)
-      .once("value", (snapshot) => {
-        const scores = [];
-        snapshot.forEach(child => scores.push(child.val()));
-        scores.sort((a, b) => b.score - a.score).slice(0, 15).forEach(entry => {
-          const item = document.createElement("li");
-          item.textContent = `${entry.name}: ${entry.score}`;
-          list.appendChild(item);
-        });
-      });
-  }
+  const database = firebase.database();
 </script>
 
 </body>
