@@ -66,9 +66,12 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
     .orderByChild("score")
     .limitToLast(5)
@@ -100,9 +103,12 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
     .orderByChild("score")
     .limitToLast(5)
@@ -147,9 +153,12 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
     .orderByChild("score")
     .limitToLast(5)
@@ -616,9 +625,12 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
     .orderByChild("score")
     .limitToLast(5)
