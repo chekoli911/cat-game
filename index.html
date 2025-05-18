@@ -51,88 +51,8 @@
       z-index: 10;
     }
   </style>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
-// Инициализация Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
-  authDomain: "catgameonline-a5db1.firebaseapp.com",
-  databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
-  projectId: "catgameonline-a5db1",
-  storageBucket: "catgameonline-a5db1.appspot.com",
-  messagingSenderId: "243768138039",
-  appId: "1:243768138039:web:07acd819a130233b1c62b2",
-  measurementId: "G-Y5EYTNQETP"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  db.ref("highscores").push({ name, score, timestamp: Date.now() }).then(() => {
-    document.getElementById("nameEntry").style.display = "none";
-    showHighscores();
-  });
-}
 
-function showHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
-  db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(15)
-    .once("value", (snapshot) => {
-      const scores = [];
-      snapshot.forEach(child => scores.push(child.val()));
-      scores.sort((a, b) => b.score - a.score).slice(0, 15).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js">
-// Инициализация Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
-  authDomain: "catgameonline-a5db1.firebaseapp.com",
-  databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
-  projectId: "catgameonline-a5db1",
-  storageBucket: "catgameonline-a5db1.appspot.com",
-  messagingSenderId: "243768138039",
-  appId: "1:243768138039:web:07acd819a130233b1c62b2",
-  measurementId: "G-Y5EYTNQETP"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  db.ref("highscores").push({ name, score, timestamp: Date.now() }).then(() => {
-    document.getElementById("nameEntry").style.display = "none";
-    showHighscores();
-  });
-}
-
-function showHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
-  db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(15)
-    .once("value", (snapshot) => {
-      const scores = [];
-      snapshot.forEach(child => scores.push(child.val()));
-      scores.sort((a, b) => b.score - a.score).slice(0, 15).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
-
-</script>
 </head>
 <body>
   <canvas id="game"></canvas>
@@ -563,27 +483,8 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    function showHighscores() {
-      const scores = [];
-      const list = document.getElementById("highscoreList");
-      list.innerHTML = "";
-      scores.slice(0, 5).forEach(s => {
-        const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
-        list.appendChild(item);
-      });
-    }
-
-    function saveHighscore() {
-      const name = document.getElementById("playerName").value || "Безымянный";
-      const scores = [];
-      scores.push({ name, score });
-      scores.sort((a, b) => b.score - a.score);
-      
-      document.getElementById("nameEntry").style.display = "none";
-      showHighscores();
-    }
-
+    
+    
     showHighscores();
 
 
@@ -601,30 +502,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function saveHighscore() {
-  const name = document.getElementById("playerName").value || "Безымянный";
-  db.ref("highscores").push({ name, score, timestamp: Date.now() }).then(() => {
-    document.getElementById("nameEntry").style.display = "none";
-    showHighscores();
-  });
-}
 
-function showHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
-  db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(15)
-    .once("value", (snapshot) => {
-      const scores = [];
-      snapshot.forEach(child => scores.push(child.val()));
-      scores.sort((a, b) => b.score - a.score).slice(0, 15).forEach(entry => {
-        const item = document.createElement("li");
-        item.textContent = `${entry.name}: ${entry.score}`;
-        list.appendChild(item);
-      });
-    });
-}
 
 </script>
 
@@ -637,6 +515,50 @@ function showHighscores() {
     <div><b>Топ рекордов:</b></div>
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
+
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyARVNAMbY3NIDAsUdb4gTat5PKko0hOZxc",
+    authDomain: "catgameonline-a5db1.firebaseapp.com",
+    databaseURL: "https://catgameonline-a5db1-default-rtdb.firebaseio.com",
+    projectId: "catgameonline-a5db1",
+    storageBucket: "catgameonline-a5db1.appspot.com",
+    messagingSenderId: "243768138039",
+    appId: "1:243768138039:web:07acd819a130233b1c62b2",
+    measurementId: "G-Y5EYTNQETP"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function saveHighscore() {
+    const name = document.getElementById("playerName").value || "Безымянный";
+    db.ref("highscores").push({ name, score, timestamp: Date.now() }).then(() => {
+      document.getElementById("nameEntry").style.display = "none";
+      showHighscores();
+    });
+  }
+
+  function showHighscores() {
+    const list = document.getElementById("highscoreList");
+    list.innerHTML = "";
+    db.ref("highscores")
+      .orderByChild("score")
+      .limitToLast(15)
+      .once("value", (snapshot) => {
+        const scores = [];
+        snapshot.forEach(child => scores.push(child.val()));
+        scores.sort((a, b) => b.score - a.score).slice(0, 15).forEach(entry => {
+          const item = document.createElement("li");
+          item.textContent = `${entry.name}: ${entry.score}`;
+          list.appendChild(item);
+        });
+      });
+  }
+</script>
 
 </body>
 </html>
