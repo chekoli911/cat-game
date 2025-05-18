@@ -66,21 +66,31 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(5)
     .once("value")
     .then(snapshot => {
+      const uniqueSet = new Set();
       const scores = [];
+
       snapshot.forEach(child => {
-        scores.unshift(child.val());
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
-      scores.forEach(s => {
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
+        item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
       });
     });
@@ -100,21 +110,31 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(5)
     .once("value")
     .then(snapshot => {
+      const uniqueSet = new Set();
       const scores = [];
+
       snapshot.forEach(child => {
-        scores.unshift(child.val());
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
-      scores.forEach(s => {
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
+        item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
       });
     });
@@ -147,21 +167,31 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(5)
     .once("value")
     .then(snapshot => {
+      const uniqueSet = new Set();
       const scores = [];
+
       snapshot.forEach(child => {
-        scores.unshift(child.val());
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
-      scores.forEach(s => {
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
+        item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
       });
     });
@@ -616,21 +646,31 @@ function saveHighscore() {
   loadHighscores();
 }
 
+
+
 function loadHighscores() {
   const list = document.getElementById("highscoreList");
-  list.innerHTML = "";
+  list.innerHTML = ""; // очищаем старый список
+
   db.ref("highscores")
-    .orderByChild("score")
-    .limitToLast(5)
     .once("value")
     .then(snapshot => {
+      const uniqueSet = new Set();
       const scores = [];
+
       snapshot.forEach(child => {
-        scores.unshift(child.val());
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
-      scores.forEach(s => {
+
+      scores.sort((a, b) => b.score - a.score);
+      scores.slice(0, 5).forEach(entry => {
         const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
+        item.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(item);
       });
     });
