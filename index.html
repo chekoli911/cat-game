@@ -685,8 +685,19 @@ function loadHighscores() {
   </div>
   <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.2); color:white; padding:10px; font-size:14px;">
     <div><b>Топ рекордов:</b></div>
-    <ul id="highscoreList" style="padding-left: 18px; max-height: 110px; overflow: hidden;" style="padding-left: 18px;"></ul>
+    <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
 
+
+<script>
+setTimeout(() => {
+  const list = document.getElementById("highscoreList");
+  if (list && list.children.length > 5) {
+    while (list.children.length > 5) {
+      list.removeChild(list.lastChild);
+    }
+  }
+}, 500); // ждём пока другие loadHighscores закончат
+</script>
 </body>
 </html>
