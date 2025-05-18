@@ -699,5 +699,24 @@ setTimeout(() => {
   }
 }, 500); // ждём пока другие loadHighscores закончат
 </script>
+
+<style>
+  #highscores { display: none; }
+</style>
+<script>
+  const waitForTop5 = setInterval(() => {
+    const list = document.getElementById("highscoreList");
+    const wrapper = document.getElementById("highscores");
+    if (list && wrapper && list.children.length > 0) {
+      // Удаляем лишнее
+      while (list.children.length > 5) {
+        list.removeChild(list.lastChild);
+      }
+      // Показываем блок, если всё готово
+      wrapper.style.display = "block";
+      clearInterval(waitForTop5);
+    }
+  }, 200);
+</script>
 </body>
 </html>
