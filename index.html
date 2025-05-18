@@ -63,10 +63,28 @@ function saveHighscore() {
     time: Date.now()
   });
   document.getElementById("nameEntry").style.display = "none";
-  }
+  loadHighscores();
+}
 
 
 
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
 
       scores.sort((a, b) => b.score - a.score);
@@ -76,35 +94,6 @@ function saveHighscore() {
         list.appendChild(item);
       });
     });
-}
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем список
-
-  db.ref("highscores").once("value").then(snapshot => {
-    const data = snapshot.val();
-    const seen = new Set();
-    const scores = [];
-
-    for (let key in data) {
-      const entry = data[key];
-      const id = entry.name + "_" + entry.score;
-      if (!seen.has(id)) {
-        seen.add(id);
-        scores.push(entry);
-      }
-    }
-
-    scores.sort((a, b) => b.score - a.score);
-
-    scores.slice(0, 5).forEach((entry, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${entry.name}: ${entry.score}`;
-      list.appendChild(li);
-    });
-  });
 }
 
 </script>
@@ -118,10 +107,28 @@ function saveHighscore() {
     time: Date.now()
   });
   document.getElementById("nameEntry").style.display = "none";
-  }
+  loadHighscores();
+}
 
 
 
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
 
       scores.sort((a, b) => b.score - a.score);
@@ -131,35 +138,6 @@ function saveHighscore() {
         list.appendChild(item);
       });
     });
-}
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем список
-
-  db.ref("highscores").once("value").then(snapshot => {
-    const data = snapshot.val();
-    const seen = new Set();
-    const scores = [];
-
-    for (let key in data) {
-      const entry = data[key];
-      const id = entry.name + "_" + entry.score;
-      if (!seen.has(id)) {
-        seen.add(id);
-        scores.push(entry);
-      }
-    }
-
-    scores.sort((a, b) => b.score - a.score);
-
-    scores.slice(0, 5).forEach((entry, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${entry.name}: ${entry.score}`;
-      list.appendChild(li);
-    });
-  });
 }
 
 </script>
@@ -186,10 +164,28 @@ function saveHighscore() {
     time: Date.now()
   });
   document.getElementById("nameEntry").style.display = "none";
-  }
+  loadHighscores();
+}
 
 
 
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
 
       scores.sort((a, b) => b.score - a.score);
@@ -199,35 +195,6 @@ function saveHighscore() {
         list.appendChild(item);
       });
     });
-}
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем список
-
-  db.ref("highscores").once("value").then(snapshot => {
-    const data = snapshot.val();
-    const seen = new Set();
-    const scores = [];
-
-    for (let key in data) {
-      const entry = data[key];
-      const id = entry.name + "_" + entry.score;
-      if (!seen.has(id)) {
-        seen.add(id);
-        scores.push(entry);
-      }
-    }
-
-    scores.sort((a, b) => b.score - a.score);
-
-    scores.slice(0, 5).forEach((entry, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${entry.name}: ${entry.score}`;
-      list.appendChild(li);
-    });
-  });
 }
 
 </script>
@@ -321,6 +288,7 @@ let mouseAppearTime = 0;
     let timerInterval;
 
     function resetGame() {
+      loadHighscores();
       catX = 100;
       catY = 100;
       score = 0;
@@ -663,7 +631,10 @@ window.addEventListener('keyup', (e) => {
 
     
     
-    function saveHighscore() {
+    loadHighscores();
+
+
+function saveHighscore() {
   const name = document.getElementById("playerName").value || "Безымянный";
   const newRef = db.ref("highscores").push();
   newRef.set({
@@ -672,10 +643,28 @@ window.addEventListener('keyup', (e) => {
     time: Date.now()
   });
   document.getElementById("nameEntry").style.display = "none";
-  }
+  loadHighscores();
+}
 
 
 
+function loadHighscores() {
+  const list = document.getElementById("highscoreList");
+  list.innerHTML = ""; // очищаем старый список
+
+  db.ref("highscores")
+    .once("value")
+    .then(snapshot => {
+      const uniqueSet = new Set();
+      const scores = [];
+
+      snapshot.forEach(child => {
+        const entry = child.val();
+        const key = `${entry.name}-${entry.score}`;
+        if (!uniqueSet.has(key)) {
+          uniqueSet.add(key);
+          scores.push(entry);
+        }
       });
 
       scores.sort((a, b) => b.score - a.score);
@@ -685,35 +674,6 @@ window.addEventListener('keyup', (e) => {
         list.appendChild(item);
       });
     });
-}
-
-
-function loadHighscores() {
-  const list = document.getElementById("highscoreList");
-  list.innerHTML = ""; // очищаем список
-
-  db.ref("highscores").once("value").then(snapshot => {
-    const data = snapshot.val();
-    const seen = new Set();
-    const scores = [];
-
-    for (let key in data) {
-      const entry = data[key];
-      const id = entry.name + "_" + entry.score;
-      if (!seen.has(id)) {
-        seen.add(id);
-        scores.push(entry);
-      }
-    }
-
-    scores.sort((a, b) => b.score - a.score);
-
-    scores.slice(0, 5).forEach((entry, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${entry.name}: ${entry.score}`;
-      list.appendChild(li);
-    });
-  });
 }
 
 </script>
@@ -728,6 +688,5 @@ function loadHighscores() {
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
 
-<script>loadHighscores();</script>
 </body>
 </html>
