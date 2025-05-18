@@ -530,8 +530,8 @@ if (score >= 110) {
 
     // Обновление позиции кота с ограничениями
 
-      catX = Math.max(0, Math.min(canvas.width - 100, catX + velocity.x));
-      catY = Math.max(0, Math.min(canvas.height - 100, catY + velocity.y));
+      catX = Math.max(0, Math.min(canvas.width - 110 * SCALE, catX + velocity.x));
+      catY = Math.max(0, Math.min(canvas.height - 110 * SCALE, catY + velocity.y));
 
       if (Date.now() - lastFoodTime > 4000) {
         foodX = Math.random() * (canvas.width - 50);
