@@ -481,25 +481,58 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-    function showHighscores() {
-      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
-      const list = document.getElementById("highscoreList");
-      list.innerHTML = "";
-      scores.slice(0, 5).forEach(s => {
-        const item = document.createElement("li");
-        item.textContent = `${s.name}: ${s.score}`;
-        list.appendChild(item);
+    
+    function saveHighscore() {
+      const name = document.getElementById("playerName").value || "Безымянный";
+      const newScore = { name, score };
+
+      const scoresRef = database.ref("scores");
+
+      scoresRef.once("value", (snapshot) => {
+        const data = snapshot.val() || {};
+        let found = false;
+
+        for (let key in data) {
+          if (data[key].name === name) {
+            if (score > data[key].score) {
+              database.ref("scores/" + key).set(newScore);
+            }
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          scoresRef.push(newScore);
+        }
+
+        document.getElementById("nameEntry").style.display = "none";
+        showHighscores();
       });
     }
 
-    function saveHighscore() {
-      const name = document.getElementById("playerName").value || "Безымянный";
-      const scores = JSON.parse(localStorage.getItem("catHighscores") || "[]");
-      scores.push({ name, score });
-      scores.sort((a, b) => b.score - a.score);
-      localStorage.setItem("catHighscores", JSON.stringify(scores.slice(0, 5)));
-      document.getElementById("nameEntry").style.display = "none";
-      showHighscores();
+    function showHighscores() {
+      const list = document.getElementById("highscoreList");
+      list.innerHTML = "";
+      database.ref("scores").once("value", (snapshot) => {
+        const data = snapshot.val() || {};
+        const entries = Object.values(data);
+
+        // Удаляем дубли по имени, оставляем только лучший
+        const bestPerName = {};
+        entries.forEach(entry => {
+          if (!bestPerName[entry.name] || entry.score > bestPerName[entry.name].score) {
+            bestPerName[entry.name] = entry;
+          }
+        });
+
+        const sorted = Object.values(bestPerName).sort((a, b) => b.score - a.score).slice(0, 15);
+        sorted.forEach(entry => {
+          const li = document.createElement("li");
+          li.textContent = `${entry.name}: ${entry.score}`;
+          list.appendChild(li);
+        });
+      });
     }
 
     showHighscores();
