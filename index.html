@@ -251,13 +251,40 @@ function loadHighscores() {
 
 </script>
 
+
+<style>
+@media (min-width: 601px) {
+  #mobileShareWrapper { display: none !important; }
+}
+</style>
+
+
+<style>
+@media (max-width: 600px) {
+  #desktopShareWrapper { display: none !important; }
+}</style>
+
 </head>
 <body>
   <canvas id="game"></canvas>
+<div id="desktopShareWrapper">
+  <button id="desktopShareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 16px 36px; font-size: 24px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
+    Поделиться в Telegram
+  </button>
+</div>
+
+<div id="mobileShareWrapper">
+  <button id="shareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 8px 18px; font-size: 14px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
+    Поделиться в Telegram
+  </button>
+</div>
+
   <div id="joystick">
     <div id="stick"></div>
   </div>
   <button id="restartButton">Сыграть ещё</button>
+
+
   <audio id="crunchSound" src="crunch.mp3"></audio>
   <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
   <audio id="mouseSound" src="intro-sound-2-269294.mp3"></audio>
@@ -283,7 +310,16 @@ bgMusic.volume = 0.4;
     let zloiY = Math.random() * (canvas.height - 110);
     const restartButton = document.getElementById('restartButton');
 
-    const cat = new Image();
+    
+const catSprite = new Image();
+catSprite.src = 'cat_animation.png';
+let catFrameIndex = 0;
+const catFrameCount = 12;
+const catFrameWidth = 80;
+const catFrameHeight = 64;
+let catAnimationTimer = 0;
+
+const cat = new Image();
     cat.src = 'my_cat.png';
 
     const bg = new Image();
@@ -360,12 +396,20 @@ let mouseAppearTime = 0;
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         return;
       }
       }
-      requestAnimationFrame(gameLoop);
+      // Обновляем кадр анимации кота
+catAnimationTimer++;
+if (catAnimationTimer % 56 === 0) {
+  catFrameIndex = (catFrameIndex + 1) % catFrameCount;
+}
+
+requestAnimationFrame(gameLoop);
     }
 
     function startTimer() {
@@ -377,6 +421,8 @@ let mouseAppearTime = 0;
           clearInterval(timerInterval);
           gameRunning = false;
           restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         }
@@ -431,7 +477,12 @@ if (score >= 110) {
       if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
         // не рисуем кота (мигание)
       } else {
-        ctx.drawImage(cat, catX, catY, 110 * SCALE, 110 * SCALE);
+        ctx.drawImage(
+  catSprite,
+  catFrameIndex * catFrameWidth, 0,
+  catFrameWidth, catFrameHeight,
+  catX, catY, 110 * SCALE, 110 * SCALE
+);
       }
       if (currentLevel > 1) {
         ctx.globalAlpha = 0.99;
@@ -613,12 +664,20 @@ if (score >= 110) {
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         return;
       }
       }
-      requestAnimationFrame(gameLoop);
+      // Обновляем кадр анимации кота
+catAnimationTimer++;
+if (catAnimationTimer % 16 === 0) {
+  catFrameIndex = (catFrameIndex + 1) % catFrameCount;
+}
+
+requestAnimationFrame(gameLoop);
     }
 
     restartButton.addEventListener('click', () => {
@@ -866,6 +925,29 @@ document.getElementById("showTop50Button").addEventListener("click", () => {
 
     document.getElementById("top50Container").style.display = "block";
   });
+});
+</script>
+
+
+
+<script>
+document.getElementById("shareButton").addEventListener("click", () => {
+  const shareText = `Мой рекорд в Cat Game: ${score} очков! Попробуй побить рекорд 👉 https://chekoli911.github.io/cat-game/`;
+  const telegramUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(shareText)}`;
+  window.open(telegramUrl, '_blank');
+});
+</script>
+
+<script>
+document.getElementById("desktopShareButton").addEventListener("click", () => {
+   const shareText = `😻 Мой рекорд в Cat Game: ${score} очков! Попробуй побить`;
+  const telegramUrl = `https://t.me/share/url?url=https://chekoli911.github.io/cat-game/&text=${encodeURIComponent(shareText)}`;
+  window.open(telegramUrl, '_blank');
+
+  setTimeout(() => {
+    const fallbackUrl = `https://t.me/share/url?text=${encodeURIComponent(shareText)}`;
+    window.open(fallbackUrl, "_blank");
+  }, 800);
 });
 </script>
 
