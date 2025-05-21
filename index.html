@@ -16,7 +16,7 @@
 
   /* Уменьшаем размеры объектов в 2 раза */
   .food, .player, .enemy, .mouse {
-    transform: scale(0.5);
+    transform: scale(1);
     transform-origin: center center;
   }
 }
@@ -68,16 +68,17 @@ canvas {
       background-size: cover;
     }
     #joystick {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      width: 120px;
-      height: 120px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid #fff;
-      border-radius: 50%;
-      touch-action: none;
-    }
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1); /* полупрозрачный фон */
+  border: 2px solid rgba(255, 255, 255, 0.2); /* полупрозрачная рамка */
+  border-radius: 50%;
+  touch-action: none;
+  opacity: 0.3; /* общий уровень видимости */
+}
     #stick {
       position: absolute;
       left: 40px;
@@ -102,7 +103,56 @@ canvas {
       cursor: pointer;
       z-index: 10;
     }
-  </style>
+  
+@media (max-width: 600px) {
+  #pauseButton {
+    top: auto !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+
+@media (max-width: 600px) {
+  #totalFeedCounter {
+    top: 5px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+  }
+}
+
+
+@media (max-width: 600px) {
+  #resumeButton {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 0 !important;
+  }
+}
+
+
+@media (max-width: 600px) {
+  #pauseOverlay > div:first-child {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  #resumeButton {
+    position: fixed !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 0 !important;
+  }
+}
+
+</style>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js">
@@ -290,7 +340,7 @@ function loadHighscores() {
 <canvas id="game"></canvas>
 
 
-<div id="totalFeedCounter" style="position:absolute; top:180px; left:20px; background:rgba(255,255,255,0.2); color:white; padding:6px 12px; font-size:16px; border-radius:6px; z-index:150;">
+<div id="totalFeedCounter" style="position:absolute; top:180px; left:5px; background:rgba(0,0,0,0.1); color:white; padding:6px 12px; font-size:16px; border-radius:6px; z-index:150;">
   Всего наел: <span id="foodTotal">0</span>
 </div>
 
@@ -298,18 +348,18 @@ function loadHighscores() {
 
 
 <div id="pauseOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); color:white; font-size:48px; text-align:center; z-index:200;">
-  <div style="margin-top:180px;">ПАУЗА</div>
-  <button id="resumeButton" style="margin-top:30px; padding:12px 28px; font-size:24px; background:rgba(255,255,255,0.2); color:white; border:none; border-radius:8px; cursor:pointer;">
+  <div style="margin-top:60px;">ПАУЗА</div>
+  <button id="resumeButton" style="margin-top:20px; padding:10px 26px; font-size:22px; background:rgba(0,0,0,0.9); color:white; border:none; border-radius:8px; cursor:pointer;">
     Продолжить
   </button>
 </div>
 
-<button id="pauseButton" style="position:absolute; top:135px; left:20px; background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 12px; font-size:18px; border-radius:6px; z-index:150;">
+<button id="pauseButton" style="position:absolute; top:135px; left:5px; background:rgba(0,0,0,0.1); color:white; border:none; padding:6px 12px; font-size:18px; border-radius:6px; z-index:150;">
   Отдохнуть
 </button>
 
 <div id="desktopShareWrapper">
-  <button id="desktopShareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 16px 36px; font-size: 24px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
+  <button id="desktopShareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 6px 16px; font-size: 22px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
     Поделиться в Telegram
   </button>
 </div>
@@ -333,8 +383,8 @@ function loadHighscores() {
 
   <script>
     const canvas = document.getElementById('game');
-    const SCALE = window.innerWidth < 600 ? 1 : 1.4;
-const FOOD_SCALE = window.innerWidth < 600 ? 0.624 : 0.936;
+    const SCALE = window.innerWidth < 600 ? 1.1 : 1.6;
+const FOOD_SCALE = window.innerWidth < 600 ? 0.624 : 1;
 const ENEMY_SCALE = window.innerWidth < 600 ? 0.52 : 0.78;
 const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -439,8 +489,8 @@ let foodEatenTotal = parseInt(localStorage.getItem("catgame-food-total") || "0")
       score = 0;
       timeLeft = 45;
       gameRunning = true;
-      foodX = Math.random() * (canvas.width - 50);
-      foodY = Math.random() * (canvas.height - 50);
+      foodX = Math.random() * (canvas.width - 110);
+        foodY = Math.random() * (canvas.height - 110);
       restartButton.style.display = 'none';
       if (currentLevel !== 1) startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
@@ -450,14 +500,18 @@ let foodEatenTotal = parseInt(localStorage.getItem("catgame-food-total") || "0")
         hitSound.play();
         lives--;
         if (lives <= 0) {
-        gameRunning = false;
-        restartButton.style.display = 'block';
-      document.getElementById('shareButton').style.display = 'block';
-      document.getElementById('desktopShareButton').style.display = 'block';
-          document.getElementById('nameEntry').style.display = 'block';
-      document.getElementById('showTop50Button').style.display = 'block';
-        return;
-      }
+  gameRunning = false;
+  bgMusic.pause(); // Останавливаем музыку
+  restartButton.style.display = 'block';
+  document.getElementById('shareButton').style.display = 'block';
+  bgMusic.pause(); // Останавливаем музыку при показе кнопки поделиться
+  document.getElementById('desktopShareButton').style.display = 'block';
+  document.getElementById('nameEntry').style.display = 'block';
+  document.getElementById('showFullAchievementsButton').style.display = 'block';
+  document.getElementById('showTop50Button').style.display = 'block';
+  return;
+}
+
       }
       // Обновляем кадр анимации кота
 catAnimationTimer++;
@@ -478,8 +532,10 @@ requestAnimationFrame(gameLoop);
           gameRunning = false;
           restartButton.style.display = 'block';
       document.getElementById('shareButton').style.display = 'block';
+  bgMusic.pause(); // Останавливаем музыку при показе кнопки поделиться
       document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
+      document.getElementById('showFullAchievementsButton').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         }
       }, 1000);
@@ -566,12 +622,33 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
         ctx.drawImage(mouseImg, mouseX, mouseY, 50 * SCALE, 50 * SCALE);
       }
 
+      
+      ctx.font = '24px sans-serif';
+
+      // Фон под Level
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(5, 5, 120, 30);
       ctx.fillStyle = 'white';
-      ctx.font = '22px sans-serif';
-      ctx.fillText(`Очки: ${score}`, 20, 30);
-      ctx.fillText(`Время: ${timeLeft}`, 20, 60);
-      ctx.fillText(`Уровень: ${currentLevel}`, 20, 120);
-      ctx.fillText(`Жизни: ${'❤️'.repeat(lives)}`, 20, 90);
+      ctx.fillText(`Level: ${currentLevel}`, 10, 30);
+
+      // Фон под сердца
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(5, 95, 120, 30);
+      ctx.fillStyle = 'white';
+      ctx.fillText(`${'💛'.repeat(lives)}`, 10, 120);
+
+      // Фон под Score
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(5, 35, 120, 30);
+      ctx.fillStyle = 'white';
+      ctx.fillText(`Score: ${score}`, 10, 60);
+
+      // Фон под Time
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(5, 65, 120, 30);
+      ctx.fillStyle = 'white';
+      ctx.fillText(`Time: ${timeLeft}`, 10, 90);
+
     }
 
     function update() {
@@ -670,8 +747,8 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       catY = Math.max(-20 * SCALE, Math.min(canvas.height - 80 * SCALE, catY + velocity.y));
 
       if (Date.now() - lastFoodTime > 4000) {
-        foodX = Math.random() * (canvas.width - 50);
-        foodY = Math.random() * (canvas.height - 50);
+        foodX = Math.random() * (canvas.width - 110);
+        foodY = Math.random() * (canvas.height - 110);
         lastFoodTime = Date.now();
       }
 
@@ -679,8 +756,8 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       const dy = catY - foodY;
       if (Math.hypot(dx, dy) < 50) {
         score++;
-        foodX = Math.random() * (canvas.width - 50);
-        foodY = Math.random() * (canvas.height - 50);
+        foodX = Math.random() * (canvas.width - 110);
+        foodY = Math.random() * (canvas.height - 110);
         lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
@@ -765,8 +842,10 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
         gameRunning = false;
         restartButton.style.display = 'block';
       document.getElementById('shareButton').style.display = 'block';
+  bgMusic.pause(); // Останавливаем музыку при показе кнопки поделиться
       document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
+      document.getElementById('showFullAchievementsButton').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         return;
       }
@@ -909,7 +988,17 @@ function loadHighscores() {
     <label>Введите имя: <input id="playerName" type="text" / oninput="localStorage.setItem(\'catgame-name\', this.value)" value=""+(localStorage.getItem(\'catgame-name\')||"")></label>
     <button onclick="saveHighscore()">Сохранить</button>
   </div>
-  <div id="highscores" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.2); color:white; padding:10px; font-size:14px;">
+
+<div id="fullAchievementsContainer" style="display:none; position:absolute; bottom:720px; top:auto; left:50%; transform:translate(-50%, 100%); background:white; padding:20px; border-radius:20px; max-height:80%; overflow:auto; z-index:30; width:80vw; max-width:500px;">
+  <h3>Мои достижения 🍽</h3>
+  <ul id="fullAchievementsList" style="padding-left:20px; font-size:16px;"></ul>
+  <button onclick="document.getElementById('fullAchievementsContainer').style.display='none'">Закрыть</button>
+</div>
+<button id="showFullAchievementsButton" style="display:none; position:absolute; top:18%; left:50%; transform:translate(-50%, 0); padding:10px 20px; font-size:16px; background:#fff; border:1px solid #ccc; border-radius:8px; z-index:25;">
+  Мои достижения
+</button>
+
+  <div id="highscores" style="position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.1); color:white; padding:10px; font-size:14px;">
     <div><b>Топ рекордов:</b></div>
     <ul id="highscoreList" style="padding-left: 18px;"></ul>
   </div>
@@ -1118,8 +1207,96 @@ document.getElementById("desktopShareButton").addEventListener("click", () => {
   draw = function() {
     if (!isPaused) originalDraw();
   };
+
+document.getElementById("showFullAchievementsButton").addEventListener("click", () => {
+  const list = document.getElementById("fullAchievementsList");
+  list.innerHTML = "";
+
+  const feedAchievements = [
+    { value: 100, title: "Маленький обжора", description: "Первая миска опустошена" },
+    { value: 200, title: "Начинающий хрумстер", description: "Только разогрел аппетит" },
+    { value: 300, title: "Кормолюб", description: "Всё вкуснее и вкуснее!" },
+    { value: 400, title: "Уверенный поедатель", description: "Играешь — значит кушаешь!" },
+    { value: 500, title: "Сытый кот", description: "Кто-то тут перекусил на славу" },
+    { value: 600, title: "Жеватель месяца", description: "Защита жевательной кармы" },
+    { value: 700, title: "Поглотитель гранул", description: "Корм исчезает в никуда..." },
+    { value: 800, title: "Не оставил ни кусочка", description: "Даже пыль не осталась" },
+    { value: 900, title: "Тарелка чиста", description: "Без воды, без хлеба — всё ушло" },
+    { value: 1000, title: "Кошачий гурман", description: "Мастер вкуса и аппетита" },
+    { value: 1200, title: "Питомец с характером", description: "Не просто кот, а воин миски!" },
+    { value: 1400, title: "Эпический хрум", description: "Хрумнул — и полегчало" },
+    { value: 1600, title: "Кот-аристократ", description: "Ешь красиво, играешь уверенно" },
+    { value: 1800, title: "Пушистый опустошитель", description: "Враг каждой упаковки" },
+    { value: 2000, title: "Босс по корму", description: "Корм? Был корм. Его больше нет" },
+    { value: 2300, title: "Рейдер мисок", description: "Миска, миска, ты следующая" },
+    { value: 2600, title: "Пищевой доминатор", description: "Вся еда — твоя" },
+    { value: 3000, title: "Хищник холодильников", description: "Теперь ты и туда лазишь" },
+    { value: 3500, title: "Профессиональный едок", description: "Не игра, а обед" },
+    { value: 4000, title: "Золотой желудок", description: "За 4000 ты достоин золотого мискокота" },
+    { value: 4500, title: "Кот в законе", description: "Уважение на районе среди всех котов" },
+    { value: 5000, title: "Кормовый монстр", description: "Страшный зверь... поедающий всё" },
+    { value: 5500, title: "Грануложор", description: "Даже сухой корм тебе вкусен" },
+    { value: 6000, title: "Тот самый кот из рекламы", description: "Ты был в рекламе корма. Да-да." },
+    { value: 7000, title: "Легенда миски", description: "Никто не ел столько, сколько ты" },
+    { value: 8000, title: "Пожиратель галактики", description: "Планеты из еды — твоя мечта" },
+    { value: 8500, title: "Бездна голода", description: "Ты всё ещё хочешь есть?" },
+    { value: 9000, title: "Бог проглотов", description: "Кто-то зовёт тебя... КОТОБОГ!" },
+    { value: 9500, title: "Миф о корме", description: "Твоя история будет передаваться в еде" },
+    { value: 10000, title: "Финальный кормокот", description: "Ты сделал это. Корм закончился. Аплодисменты!👏" }
+  ];
+
+  feedAchievements.forEach(a => {
+    const li = document.createElement("li");
+    if (foodEatenTotal >= a.value) {
+      li.innerHTML = `🥇 <b>${a.value}</b>: ${a.title} — ${a.description}`;
+    } else {
+      li.innerHTML = `🔒 <b>${a.value}</b>: <i>ещё всё впереди...</i>`;
+    }
+    list.appendChild(li);
+  });
+
+  document.getElementById("fullAchievementsContainer").style.display = "block";
+});
+
+
+const joystickRight = document.getElementById('joystickRight');
+const stickRight = document.getElementById('stickRight');
+let centerRight = { x: joystickRight.offsetLeft + 60, y: joystickRight.offsetTop + 60 };
+
+joystickRight.addEventListener('touchmove', (e) => {
+  const touch = e.touches[0];
+  const dx = touch.clientX - centerRight.x;
+  const dy = touch.clientY - centerRight.y;
+  const dist = Math.min(Math.hypot(dx, dy), 40);
+  const angle = Math.atan2(dy, dx);
+  const x = dist * Math.cos(angle);
+  const y = dist * Math.sin(angle);
+
+  stickRight.style.left = `${60 + x - 20}px`;
+  stickRight.style.top = `${60 + y - 20}px`;
+
+  velocity.x = x * 0.08;
+  velocity.y = y * 0.08;
+});
+
+joystickRight.addEventListener('touchend', () => {
+  stickRight.style.left = '40px';
+  stickRight.style.top = '40px';
+  velocity.x = 0;
+  velocity.y = 0;
+});
+
+window.addEventListener('resize', () => {
+  centerRight = { x: joystickRight.offsetLeft + 60, y: joystickRight.offsetTop + 60 };
+});
+
 </script>
 
+
+
+  <div id="joystickRight" style="position: absolute; bottom: 20px; right: 20px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 50%; touch-action: none; opacity: 0.3; z-index: 100;">
+    <div id="stickRight" style="position: absolute; left: 40px; top: 40px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none;"></div>
+  </div>
 
 </body>
 </html>
