@@ -251,13 +251,81 @@ function loadHighscores() {
 
 </script>
 
+
+<style>
+@media (min-width: 601px) {
+  #mobileShareWrapper { display: none !important; }
+}
+</style>
+
+
+<style>
+@media (max-width: 600px) {
+  #desktopShareWrapper { display: none !important; }
+}</style>
+
+
+
+
+
+
+<style>
+@media (min-width: 601px) {
+  #joystick {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+</style>
+
 </head>
 <body>
-  <canvas id="game"></canvas>
+  
+<div id="mainMenu" style="position:fixed; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center; z-index:100;">
+  <button id="startGameButton" style="position:absolute; bottom:80px; left:50%; transform:translateX(-50%); padding:16px 36px; font-size:24px; background-color:#34aadf; color:white; border:none; border-radius:12px; cursor:pointer; z-index:101;">
+    Играть
+  </button>
+</div>
+
+<canvas id="game"></canvas>
+
+
+<div id="totalFeedCounter" style="position:absolute; top:180px; left:20px; background:rgba(255,255,255,0.2); color:white; padding:6px 12px; font-size:16px; border-radius:6px; z-index:150;">
+  Всего наел: <span id="foodTotal">0</span>
+</div>
+
+
+
+
+<div id="pauseOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); color:white; font-size:48px; text-align:center; z-index:200;">
+  <div style="margin-top:180px;">ПАУЗА</div>
+  <button id="resumeButton" style="margin-top:30px; padding:12px 28px; font-size:24px; background:rgba(255,255,255,0.2); color:white; border:none; border-radius:8px; cursor:pointer;">
+    Продолжить
+  </button>
+</div>
+
+<button id="pauseButton" style="position:absolute; top:135px; left:20px; background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 12px; font-size:18px; border-radius:6px; z-index:150;">
+  Отдохнуть
+</button>
+
+<div id="desktopShareWrapper">
+  <button id="desktopShareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 16px 36px; font-size: 24px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
+    Поделиться в Telegram
+  </button>
+</div>
+
+<div id="mobileShareWrapper">
+  <button id="shareButton" style="display: none; position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); padding: 8px 18px; font-size: 14px; background: #34aadf; color: white; border: 1px solid #ccc; border-radius: 10px; z-index: 20;">
+    Поделиться в Telegram
+  </button>
+</div>
+
   <div id="joystick">
     <div id="stick"></div>
   </div>
   <button id="restartButton">Сыграть ещё</button>
+
+
   <audio id="crunchSound" src="crunch.mp3"></audio>
   <audio id="hitSound" src="dog-bark-type-06-293299_trimmed.mp3"></audio>
   <audio id="mouseSound" src="intro-sound-2-269294.mp3"></audio>
@@ -265,7 +333,9 @@ function loadHighscores() {
 
   <script>
     const canvas = document.getElementById('game');
-    const SCALE = window.innerWidth < 600 ? 0.7 : 1;
+    const SCALE = window.innerWidth < 600 ? 1 : 1.4;
+const FOOD_SCALE = window.innerWidth < 600 ? 0.624 : 0.936;
+const ENEMY_SCALE = window.innerWidth < 600 ? 0.52 : 0.78;
 const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -283,7 +353,16 @@ bgMusic.volume = 0.4;
     let zloiY = Math.random() * (canvas.height - 110);
     const restartButton = document.getElementById('restartButton');
 
-    const cat = new Image();
+    
+const catSprite = new Image();
+catSprite.src = 'cat_animation.png';
+let catFrameIndex = 0;
+const catFrameCount = 17;
+const catFrameWidth = 720;
+const catFrameHeight = 720;
+let catAnimationTimer = 0;
+
+const cat = new Image();
     cat.src = 'my_cat.png';
 
     const bg = new Image();
@@ -298,6 +377,9 @@ const bg9 = new Image();
 const bg10 = new Image();
 const bg11 = new Image();
 const bg12 = new Image();
+const bg13 = new Image();
+const bg14 = new Image();
+const bg15 = new Image();
     bg2.src = 'level2_bg.png';
 bg3.src = '3_level.png';
 bg4.src = '4_level.png';
@@ -309,6 +391,9 @@ bg9.src = '9_level.png';
 bg10.src = '10_level.png';
 bg11.src = '11_level.png';
 bg12.src = '12_level.png';
+bg13.src = '13_level_bg.png';
+bg14.src = '14_level.png';
+bg15.src = '15_level.png';
     bg.src = 'my_bg.png';
 
     const mouseImg = new Image();
@@ -338,7 +423,14 @@ let mouseAppearTime = 0;
     let currentLevel = 1;
     let lastHitTime = 0;
     let lastFoodTime = Date.now();
-    let timerInterval;
+    
+let timerStarted = false;
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("foodTotal").textContent = foodEatenTotal;
+});
+
+let timerInterval;
+let foodEatenTotal = parseInt(localStorage.getItem("catgame-food-total") || "0");
 
     function resetGame() {
       loadHighscores();
@@ -350,7 +442,7 @@ let mouseAppearTime = 0;
       foodX = Math.random() * (canvas.width - 50);
       foodY = Math.random() * (canvas.height - 50);
       restartButton.style.display = 'none';
-      startTimer();
+      if (currentLevel !== 1) startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
       if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
@@ -360,23 +452,33 @@ let mouseAppearTime = 0;
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         return;
       }
       }
-      requestAnimationFrame(gameLoop);
+      // Обновляем кадр анимации кота
+catAnimationTimer++;
+if (catAnimationTimer % 56 === 0) {
+  catFrameIndex = (catFrameIndex + 1) % catFrameCount;
+}
+
+requestAnimationFrame(gameLoop);
     }
 
     function startTimer() {
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
-        if (timeLeft > 0) {
+        if (!isPaused && timeLeft > 0) {
           timeLeft--;
-        } else {
+        } else if (!isPaused && timeLeft <= 0) {
           clearInterval(timerInterval);
           gameRunning = false;
           restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         }
@@ -394,6 +496,13 @@ let bgDrawWidth, bgDrawHeight;
 if (canvasAspect > bgAspect) {
   bgDrawWidth = canvas.width;
   bgDrawHeight = canvas.width / bgAspect;
+
+    // Отладка: рисуем хитбоксы
+    ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.strokeRect(catX, catY, 110 * SCALE, 110 * SCALE);
+    ctx.strokeStyle = 'rgba(0, 0, 255, 0.5)';
+    ctx.strokeRect(foodX, foodY, 110 * FOOD_SCALE, 110 * FOOD_SCALE);
+    
 } else {
   bgDrawHeight = canvas.height;
   bgDrawWidth = canvas.height * bgAspect;
@@ -402,43 +511,56 @@ if (canvasAspect > bgAspect) {
 const bgX = (canvas.width - bgDrawWidth) / 2;
 const bgY = (canvas.height - bgDrawHeight) / 2;
 
+
 let activeBg = bg;
-if (score >= 110) {
+if (score >= 140 && bg15.complete) {
+  activeBg = bg15;
+} else if (score >= 130 && bg14.complete) {
+  activeBg = bg14;
+} else if (score >= 120 && bg13.complete) {
+  activeBg = bg13;
+} else if (score >= 110 && bg12.complete) {
   activeBg = bg12;
-} else if (score >= 100) {
+} else if (score >= 100 && bg11.complete) {
   activeBg = bg11;
-} else if (score >= 90) {
+} else if (score >= 90 && bg10.complete) {
   activeBg = bg10;
-} else if (score >= 80) {
+} else if (score >= 80 && bg9.complete) {
   activeBg = bg9;
-} else if (score >= 70) {
+} else if (score >= 70 && bg8.complete) {
   activeBg = bg8;
-} else if (score >= 60) {
+} else if (score >= 60 && bg7.complete) {
   activeBg = bg7;
-} else if (score >= 50) {
+} else if (score >= 50 && bg6.complete) {
   activeBg = bg6;
-} else if (score >= 40) {
+} else if (score >= 40 && bg5.complete) {
   activeBg = bg5;
-} else if (score >= 30) {
+} else if (score >= 30 && bg4.complete) {
   activeBg = bg4;
-} else if (score >= 20) {
+} else if (score >= 20 && bg3.complete) {
   activeBg = bg3;
-} else if (score >= 10) {
+} else if (score >= 10 && bg2.complete) {
   activeBg = bg2;
 }
-      ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
+ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
+;
 
       if (Date.now() - lastHitTime < 3000 && Math.floor(Date.now() / 200) % 2 === 0) {
         // не рисуем кота (мигание)
       } else {
-        ctx.drawImage(cat, catX, catY, 110 * SCALE, 110 * SCALE);
+        ctx.drawImage(
+  catSprite,
+  catFrameIndex * catFrameWidth, 0,
+  catFrameWidth, catFrameHeight,
+  catX, catY, 110 * SCALE, 110 * SCALE
+);
       }
       if (currentLevel > 1) {
         ctx.globalAlpha = 0.99;
-        ctx.drawImage(catZloi, zloiX, zloiY, 110 * SCALE, 110 * SCALE);
+        ctx.drawImage(catZloi, zloiX, zloiY, 110 * ENEMY_SCALE, 110 * ENEMY_SCALE);
         ctx.globalAlpha = 1.0;
       }
-      ctx.drawImage(food, foodX, foodY, 110 * SCALE, 110 * SCALE);
+      ctx.drawImage(food, foodX, foodY, 110 * FOOD_SCALE, 110 * FOOD_SCALE);
 
       if (mouseVisible) {
         ctx.drawImage(mouseImg, mouseX, mouseY, 50 * SCALE, 50 * SCALE);
@@ -471,7 +593,19 @@ if (score >= 110) {
     
       // Мышка появляется раз в 20 секунд
       const now = Date.now();
-      if (currentLevel > 3 && !mouseVisible && now - mouseCooldown > 180000) {
+      
+      if ((currentLevel === 13 || currentLevel === 14 || currentLevel === 15) && !mouseVisible && now - mouseCooldown > 10000) {
+        mouseX = Math.random() * (canvas.width - 50);
+        mouseY = Math.random() * (canvas.height - 50);
+        mouseVisible = true;
+        mouseAppearTime = now;
+      } else if (currentLevel > 3 && !mouseVisible && now - mouseCooldown > 180000) {
+
+        mouseX = Math.random() * (canvas.width - 50);
+        mouseY = Math.random() * (canvas.height - 50);
+        mouseVisible = true;
+        mouseAppearTime = now;
+      } else if (currentLevel > 3 && !mouseVisible && now - mouseCooldown > 180000) {
         mouseX = Math.random() * (canvas.width - 50);
         mouseY = Math.random() * (canvas.height - 50);
         mouseVisible = true;
@@ -522,6 +656,8 @@ if (score >= 110) {
       let dxMouse = catX - mouseX;
       let dyMouse = catY - mouseY;
       if (mouseVisible && Math.hypot(dxMouse, dyMouse) < 60) {
+        if (currentLevel === 15) score += 2;
+        else if (currentLevel === 13 || currentLevel === 14) score += 1;
         mouseSound.play();
         if (lives < 3) lives++;
         mouseVisible = false;
@@ -530,8 +666,8 @@ if (score >= 110) {
 
     // Обновление позиции кота с ограничениями
 
-      catX = Math.max(0, Math.min(canvas.width - 110 * SCALE, catX + velocity.x));
-      catY = Math.max(0, Math.min(canvas.height - 110 * SCALE, catY + velocity.y));
+      catX = Math.max(-10 * SCALE, Math.min(canvas.width - 80 * SCALE, catX + velocity.x));
+      catY = Math.max(-20 * SCALE, Math.min(canvas.height - 80 * SCALE, catY + velocity.y));
 
       if (Date.now() - lastFoodTime > 4000) {
         foodX = Math.random() * (canvas.width - 50);
@@ -548,6 +684,9 @@ if (score >= 110) {
         lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
+                foodEatenTotal++;
+                document.getElementById("foodTotal").textContent = foodEatenTotal;
+        localStorage.setItem("catgame-food-total", foodEatenTotal);
         if (score === 1) {
           bgMusic.play().catch(() => {});
         }
@@ -557,50 +696,62 @@ if (score >= 110) {
     function gameLoop() {
       if (!gameRunning) return;
       update();
-      if (score >= 110 && currentLevel < 12) {
+      if (score >= 140 && currentLevel < 15) {
+        currentLevel = 15;
+        timeLeft = 45;
+        if (currentLevel !== 1) startTimer();
+      } else if (score >= 130 && currentLevel < 14) {
+        currentLevel = 14;
+        timeLeft = 45;
+        if (currentLevel !== 1) startTimer();
+      } else if (score >= 120 && currentLevel < 13) {
+        currentLevel = 13;
+        timeLeft = 45;
+        if (currentLevel !== 1) startTimer();
+      } else if (score >= 110 && currentLevel < 12) {
         currentLevel = 12;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 100 && currentLevel < 11) {
         currentLevel = 11;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 90 && currentLevel < 10) {
         currentLevel = 10;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 80 && currentLevel < 9) {
         currentLevel = 9;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 70 && currentLevel < 8) {
         currentLevel = 8;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 60 && currentLevel < 7) {
         currentLevel = 7;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 50 && currentLevel < 6) {
         currentLevel = 6;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 40 && currentLevel < 5) {
         currentLevel = 5;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 30 && currentLevel < 4) {
         currentLevel = 4;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 20 && currentLevel < 3) {
         currentLevel = 3;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       } else if (score >= 10 && currentLevel < 2) {
         currentLevel = 2;
         timeLeft = 45;
-        startTimer();
+        if (currentLevel !== 1) startTimer();
       }
 
       draw();
@@ -613,12 +764,20 @@ if (score >= 110) {
         if (lives <= 0) {
         gameRunning = false;
         restartButton.style.display = 'block';
+      document.getElementById('shareButton').style.display = 'block';
+      document.getElementById('desktopShareButton').style.display = 'block';
           document.getElementById('nameEntry').style.display = 'block';
       document.getElementById('showTop50Button').style.display = 'block';
         return;
       }
       }
-      requestAnimationFrame(gameLoop);
+      // Обновляем кадр анимации кота
+catAnimationTimer++;
+if (catAnimationTimer % 16 === 0) {
+  catFrameIndex = (catFrameIndex + 1) % catFrameCount;
+}
+
+requestAnimationFrame(gameLoop);
     }
 
     restartButton.addEventListener('click', () => {
@@ -630,6 +789,10 @@ if (score >= 110) {
     let center = { x: joystick.offsetLeft + 60, y: joystick.offsetTop + 60 };
 
     joystick.addEventListener('touchmove', (e) => {
+  if (currentLevel === 1 && !timerStarted) {
+    startTimer();
+    timerStarted = true;
+  }
       const touch = e.touches[0];
       const dx = touch.clientX - center.x;
       const dy = touch.clientY - center.y;
@@ -663,11 +826,13 @@ if (score >= 110) {
     
 
     cat.onload = bg.onload = food.onload = () => {
-      resetGame();
-    };
-  
+
 window.addEventListener('keydown', (e) => {
   const speed = 5;
+  if (currentLevel === 1 && !timerStarted) {
+    startTimer();
+    timerStarted = true;
+  }
   switch (e.code) {
     case 'KeyW': case 'ArrowUp': velocity.y = -speed; break;
     case 'KeyS': case 'ArrowDown': velocity.y = speed; break;
@@ -675,6 +840,11 @@ window.addEventListener('keydown', (e) => {
     case 'KeyD': case 'ArrowRight': velocity.x = speed; break;
   }
 });
+
+      resetGame();
+    };
+  
+
 
 window.addEventListener('keyup', (e) => {
   switch (e.code) {
@@ -868,6 +1038,88 @@ document.getElementById("showTop50Button").addEventListener("click", () => {
   });
 });
 </script>
+
+
+
+<script>
+document.getElementById("shareButton").addEventListener("click", () => {
+  const shareText = `Мой рекорд в Cat Game: ${score} очков! Попробуй побить рекорд 👉 https://chekoli911.github.io/cat-game/`;
+  const telegramUrl = `https://t.me/share/url?url=&text=${encodeURIComponent(shareText)}`;
+  window.open(telegramUrl, '_blank');
+});
+</script>
+
+<script>
+document.getElementById("desktopShareButton").addEventListener("click", () => {
+   const shareText = `😻 Мой рекорд в Cat Game: ${score} очков! Попробуй побить`;
+  const telegramUrl = `https://t.me/share/url?url=https://chekoli911.github.io/cat-game/&text=${encodeURIComponent(shareText)}`;
+  window.open(telegramUrl, '_blank');
+
+  setTimeout(() => {
+    const fallbackUrl = `https://t.me/share/url?text=${encodeURIComponent(shareText)}`;
+    window.open(fallbackUrl, "_blank");
+  }, 800);
+});
+</script>
+
+
+<script>
+  const mainMenu = document.getElementById("mainMenu");
+  const startButton = document.getElementById("startGameButton");
+
+  // Устанавливаем фон под размер экрана
+  if (window.innerWidth < 600) {
+    mainMenu.style.backgroundImage = "url('main_start_mobile.png')";
+  document.getElementById("totalFeedCounter").style.display = "none";
+  document.getElementById("pauseButton").style.display = "none";
+  } else {
+    mainMenu.style.backgroundImage = "url('main_start.png')";
+  document.getElementById("totalFeedCounter").style.display = "none";
+  document.getElementById("pauseButton").style.display = "none";
+  }
+
+  // По нажатию — скрываем меню и запускаем игру
+  startButton.addEventListener("click", () => {
+    mainMenu.style.display = "none";
+    document.getElementById("totalFeedCounter").style.display = "block";
+    document.getElementById("pauseButton").style.display = "block";
+    resetGame();
+  });
+</script>
+
+
+
+<script>
+  let isPaused = false;
+
+  const pauseBtn = document.getElementById("pauseButton");
+  const pauseOverlay = document.getElementById("pauseOverlay");
+  const resumeBtn = document.getElementById("resumeButton");
+
+  pauseBtn.addEventListener("click", () => {
+  if (typeof bgMusic !== "undefined") bgMusic.pause();
+    isPaused = true;
+    pauseOverlay.style.display = "block";
+  });
+
+  resumeBtn.addEventListener("click", () => {
+  if (typeof bgMusic !== "undefined") bgMusic.play().catch(() => {});
+    isPaused = false;
+    pauseOverlay.style.display = "none";
+  });
+
+  const originalUpdate = update;
+  const originalDraw = draw;
+
+  update = function() {
+    if (!isPaused) originalUpdate();
+  };
+
+  draw = function() {
+    if (!isPaused) originalDraw();
+  };
+</script>
+
 
 </body>
 </html>
