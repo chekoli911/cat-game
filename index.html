@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+
+<style>
+@media (max-width: 600px) {
+  #loadingScreen {
+    background-image: url('main_load_mobile.png') !important;
+  }
+}
+</style>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Game</title>
@@ -330,6 +339,14 @@ function loadHighscores() {
 
 </head>
 <body>
+
+  <div id="loadingScreen" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; background: url('main_load.png') center center / cover no-repeat; background-color: black; background-size: cover;  display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999;">
+  <div style="color: white; font-size: 20px; margin-bottom: 20px;">Загрузка...</div>
+  <div style="width: 80%; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+    <div id="loadingBar" style="height: 100%; width: 0%; background: white; transition: width 0.2s;"></div>
+  </div>
+</div>
+
   
 <div id="mainMenu" style="position:fixed; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center; z-index:100;">
   <button id="startGameButton" style="position:absolute; bottom:80px; left:50%; transform:translateX(-50%); padding:16px 36px; font-size:24px; background-color:#34aadf; color:white; border:none; border-radius:12px; cursor:pointer; z-index:101;">
@@ -472,6 +489,9 @@ let mouseAppearTime = 0;
     let lives = 3;
     let currentLevel = 1;
     let lastHitTime = 0;
+let invincibleAfterPauseUntil = 0;
+let enemyActive = false;
+let enemyResumeDelay = 0;
     let lastFoodTime = Date.now();
     
 let timerStarted = false;
@@ -489,13 +509,13 @@ let foodEatenTotal = parseInt(localStorage.getItem("catgame-food-total") || "0")
       score = 0;
       timeLeft = 45;
       gameRunning = true;
-      foodX = Math.random() * (canvas.width - 110);
-        foodY = Math.random() * (canvas.height - 110);
+      foodX = 30 + Math.random() * (canvas.width - 160);
+        foodY = 30 + Math.random() * (canvas.height - 160);
       restartButton.style.display = 'none';
       if (currentLevel !== 1) startTimer();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
-      if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
+      if (now > invincibleAfterPauseUntil && currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
         hitSound.play();
         lives--;
@@ -652,7 +672,7 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
     }
 
     function update() {
-      if (currentLevel > 1) {
+      if (currentLevel > 1 && enemyActive && enemyResumeDelay <= 0) {
       // Злой кот двигается к игроку
       const dzX = catX - zloiX;
       const dzY = catY - zloiY;
@@ -736,7 +756,7 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
         if (currentLevel === 15) score += 2;
         else if (currentLevel === 13 || currentLevel === 14) score += 1;
         mouseSound.play();
-        if (lives < 3) lives++;
+        if (lives < 4) lives++;
         mouseVisible = false;
         mouseCooldown = now;
       }
@@ -747,8 +767,8 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       catY = Math.max(-20 * SCALE, Math.min(canvas.height - 80 * SCALE, catY + velocity.y));
 
       if (Date.now() - lastFoodTime > 4000) {
-        foodX = Math.random() * (canvas.width - 110);
-        foodY = Math.random() * (canvas.height - 110);
+        foodX = 30 + Math.random() * (canvas.width - 160);
+        foodY = 30 + Math.random() * (canvas.height - 160);
         lastFoodTime = Date.now();
       }
 
@@ -756,8 +776,9 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       const dy = catY - foodY;
       if (Math.hypot(dx, dy) < 50) {
         score++;
-        foodX = Math.random() * (canvas.width - 110);
-        foodY = Math.random() * (canvas.height - 110);
+        if (currentLevel === 2 && !enemyActive) enemyActive = true;
+        foodX = 30 + Math.random() * (canvas.width - 160);
+        foodY = 30 + Math.random() * (canvas.height - 160);
         lastFoodTime = Date.now();
         lastFoodTime = Date.now();
         crunchSound.play();
@@ -772,6 +793,7 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
 
     function gameLoop() {
       if (!gameRunning) return;
+  if (enemyResumeDelay > 0) enemyResumeDelay--;
       update();
       if (score >= 140 && currentLevel < 15) {
         currentLevel = 15;
@@ -834,7 +856,7 @@ ctx.drawImage(activeBg, bgX, bgY, bgDrawWidth, bgDrawHeight);
       draw();
       const playerToZloi = Math.hypot(catX - zloiX, catY - zloiY);
       const now = Date.now();
-      if (currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
+      if (now > invincibleAfterPauseUntil && currentLevel > 1 && now - lastHitTime > 3000 && playerToZloi < 55) {
         lastHitTime = now;
         hitSound.play();
         lives--;
@@ -860,7 +882,7 @@ requestAnimationFrame(gameLoop);
     }
 
     restartButton.addEventListener('click', () => {
-      window.location.href = 'https://chekoli911.github.io/cat-game/';
+      window.location.href = 'https://chekoli911.github.io/TEST-CAT-GAME/';
     });
 
     const joystick = document.getElementById('joystick');
@@ -1258,45 +1280,89 @@ document.getElementById("showFullAchievementsButton").addEventListener("click", 
   document.getElementById("fullAchievementsContainer").style.display = "block";
 });
 
-
-const joystickRight = document.getElementById('joystickRight');
-const stickRight = document.getElementById('stickRight');
-let centerRight = { x: joystickRight.offsetLeft + 60, y: joystickRight.offsetTop + 60 };
-
-joystickRight.addEventListener('touchmove', (e) => {
-  const touch = e.touches[0];
-  const dx = touch.clientX - centerRight.x;
-  const dy = touch.clientY - centerRight.y;
-  const dist = Math.min(Math.hypot(dx, dy), 40);
-  const angle = Math.atan2(dy, dx);
-  const x = dist * Math.cos(angle);
-  const y = dist * Math.sin(angle);
-
-  stickRight.style.left = `${60 + x - 20}px`;
-  stickRight.style.top = `${60 + y - 20}px`;
-
-  velocity.x = x * 0.08;
-  velocity.y = y * 0.08;
-});
-
-joystickRight.addEventListener('touchend', () => {
-  stickRight.style.left = '40px';
-  stickRight.style.top = '40px';
-  velocity.x = 0;
-  velocity.y = 0;
-});
-
-window.addEventListener('resize', () => {
-  centerRight = { x: joystickRight.offsetLeft + 60, y: joystickRight.offsetTop + 60 };
-});
-
 </script>
 
 
 
-  <div id="joystickRight" style="position: absolute; bottom: 20px; right: 20px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 50%; touch-action: none; opacity: 0.3; z-index: 100;">
-    <div id="stickRight" style="position: absolute; left: 40px; top: 40px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none;"></div>
-  </div>
+<div id="joystickRight" style="display: none; position: absolute; bottom: 20px; right: 20px; width: 120px; height: 120px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 50%; touch-action: none; opacity: 0.3; z-index: 100;">
+  <div id="stickRight" style="position: absolute; left: 40px; top: 40px; width: 40px; height: 40px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none;"></div>
+</div>
+
+<script>
+  const loadingScreen = document.getElementById("loadingScreen");
+  const loadingBar = document.getElementById("loadingBar");
+  const startGameButton = document.getElementById("startGameButton");
+
+  let progress = 0;
+  let loadingInterval = setInterval(() => {
+    progress += Math.random() * 10;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(loadingInterval);
+      loadingScreen.style.display = "none";
+      startGameButton.style.display = "block";
+    }
+    loadingBar.style.width = progress + "%";
+  }, 200);
+
+  // скрываем кнопку играть до завершения загрузки
+  if (startGameButton) startGameButton.style.display = "none";
+</script>
 
 </body>
+
+<script>
+  const joystickRight = document.getElementById('joystickRight');
+  const stickRight = document.getElementById('stickRight');
+  let centerRight = { x: joystickRight.offsetLeft + 60, y: joystickRight.offsetTop + 60 };
+
+  joystickRight.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  joystickRight.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const dx = touch.clientX - centerRight.x;
+      const dy = touch.clientY - centerRight.y;
+      const dist = Math.min(Math.hypot(dx, dy), 40);
+      const angle = Math.atan2(dy, dx);
+      const x = dist * Math.cos(angle);
+      const y = dist * Math.sin(angle);
+
+      stickRight.style.left = `${60 + x - 20}px`;
+      stickRight.style.top = `${60 + y - 20}px`;
+
+      velocity.x = x * 0.08;
+      velocity.y = y * 0.08;
+    }
+  }, { passive: false });
+
+  joystickRight.addEventListener('touchend', () => {
+    stickRight.style.left = '40px';
+    stickRight.style.top = '40px';
+    velocity.x = 0;
+    velocity.y = 0;
+  });
+
+  window.addEventListener('resize', () => {
+    centerRight = {
+      x: joystickRight.offsetLeft + joystickRight.offsetWidth / 2,
+      y: joystickRight.offsetTop + joystickRight.offsetHeight / 2
+    };
+  });
+
+  // Показать правый джойстик при старте игры
+  document.getElementById("startGameButton").addEventListener("click", () => {
+    joystickRight.style.display = "block";
+  centerRight = {
+    x: joystickRight.offsetLeft + joystickRight.offsetWidth / 2,
+    y: joystickRight.offsetTop + joystickRight.offsetHeight / 2
+  };
+  });
+</script>
+
 </html>
